@@ -41,7 +41,7 @@ public class NaverCrawler {
             //프린트
             System.out.println("이름 : " + firstResName);
             System.out.println("주소 : " + address);
-            System.out.println("평점 : " + review.getText());
+            System.out.println("네이버 평점 : " + review.getText());
             //4-2. 일치하지 않으면
         } else {        //이름 받아오지 못하면
             System.out.println("음식점이 없습니다.");
