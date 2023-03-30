@@ -2,7 +2,6 @@
   <div style="display:flex;">
     <div style="width : 17%; min-width: 280px">
       <Sidebar/>
-      <HelloWorld/>
     </div>
     <div style="width: 100% ; height: 100vh">
       <RouterView/>

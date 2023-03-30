@@ -10,7 +10,7 @@ import router from "@/router";
 import store from "@/store/store";
 
 export default {
-  name: "callback.vue",
+  name: "Callback.vue",
 
   mounted() {
     const webAddress = window.location.href;

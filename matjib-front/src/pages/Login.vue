@@ -17,12 +17,13 @@ export default {
     const client = process.env.VUE_APP_CLIENT_ID;
     const callback = process.env.VUE_APP_CALLBACK_URI;
     const randomState = Math.random().toString(36).substring(2, 12);
+
     const naverLogin = () => {
       store.commit('setNState', randomState);
+
       const url = "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id="+
           client + "&state=" + store.state.loginState + "&redirect_uri=" + callback
       window.location.replace(url);
-
     }
     return {naverLogin}
 
