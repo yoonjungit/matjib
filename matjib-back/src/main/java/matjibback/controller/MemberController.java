@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -27,14 +28,16 @@ public class MemberController {
     JwtService jwtService;
 
     @PostMapping("matjib/member/login")
-    public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res){
+    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> params, HttpServletResponse res){
         NaverUserInfo response = naverLoginService.getUserNaverProfile(params.get("tempToken"), params.get("callbackState"));
         String token = response.getId();
         int id ;
+        String nickname;
         Member member = memberRepository.findMembersByToken(token);
 
         if (member != null){
             id = member.getId();
+            nickname = member.getNickname();
         } else {
             Member newMember = new Member();
             newMember.setToken(response.getId());
@@ -46,7 +49,12 @@ public class MemberController {
 
             memberRepository.save(newMember);
             id = newMember.getId();
+            nickname = newMember.getNickname();
         }
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", id);
+        data.put("nickname", nickname);
+
         String loginToken = jwtService.getToken("id", id);
 
         Cookie cookie =new Cookie("token", loginToken);
@@ -54,7 +62,7 @@ public class MemberController {
         cookie.setPath("/");
 
         res.addCookie(cookie);
-        return new ResponseEntity<>(id, HttpStatus.OK);
+        return new ResponseEntity<>(data, HttpStatus.OK);
 
     }
 

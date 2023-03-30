@@ -3,12 +3,18 @@
     <div class="sidebar">
       <router-link to="/search" style="font-size:30px; font-weight : bold; text-align: center">찐찐Univ</router-link>
       <br>
-      <router-link to="/mypage" style="text-align: left;">
-        <div class="profile">
-          <i class="fa fa-graduation-cap" aria-hidden="true"></i>
-          <div style="margin-left: 10px;">User1</div>
-        </div>
-      </router-link>
+      <div class="profile">
+        <i class="fa fa-graduation-cap" aria-hidden="true"></i>
+        <router-link to="/mypage" style="text-align: left;">
+          <div style="margin-left: 10px;" v-if="$store.state.account.id"> {{ $store.state.account.nickname }} </div>
+        </router-link>
+        <div style="margin-left: 10px;" v-if="!$store.state.account.id">로그인 후 사용해주세요.</div>
+        <a to="/" v-else @click="logout()" style="display: flex; align-items: center; margin-left: auto;">
+          <div style="margin-right: 5px;">
+            <i class="fa fa-sign-out" aria-hidden="true" style="float: right"></i>
+          </div>
+        </a>
+      </div>
       <hr>
       <ul style="list-style: none;">
         <li>
@@ -48,10 +54,24 @@
   </div>
 </template>
 <script>
+import axios from "axios";
+import store from "@/store/store";
+import router from "@/router";
+
 export default {
   name: 'Sidebar',
   props: {
     msg: String
+  },
+  setup() {
+    const logout = () => {
+      axios.post("/matjib/member/logout").then(() => {
+        store.commit('setAccount', 0);
+        store.commit('setNickname', 0);
+        router.push({path: "/"});
+      });
+    }
+    return {logout}
   }
 }
 </script>
@@ -66,12 +86,13 @@ export default {
 }
 
 .profile {
-  width:100%;
+  width: 100%;
   font-size: 15px;
   display: flex;
   align-items: center;
   margin-top: 10px;
-  margin-left : 10px;
+  margin-left: 10px;
+  color: white;
 }
 
 a {

@@ -21,8 +21,11 @@ export default {
 
     const submit = () => {
       axios.post('/matjib/member/login', {tempToken, callbackState}).then((res) => {
+        const { data } = res;
         store.commit('setNState', 0);
-        store.commit('setAccount', res.data);
+        store.commit('setAccount', data.id);
+        store.commit('setNickname', data.nickname);
+
         router.push({path: "/search"})
         console.log('success');
       })
@@ -33,6 +36,9 @@ export default {
       alert("로그인에 실패하였습니다.")
       router.push({path: "/"})
       // state 값이 다를 시(사이트 위변조 방지- CSRF)
+    }else if(callbackState!=store.state.loginState) {
+      alert("잘못된 접근입니다.")
+      router.push({path: "/"})
     } else {    //로그인 성공 시 -> 서버로 인가 코드 보내서 정보 받기
       submit()
     }
