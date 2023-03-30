@@ -13,9 +13,18 @@
 </template>
 
 <script>
+import store from "@/store/store";
+import router from "@/router";
+
 export default {
   name: 'List',
   components: {
+  },
+  mounted() {
+    if (store.state.account.id == 0){
+      alert("로그인 후 사용 가능 합니다.")
+      router.push({path: "/"})
+    }
   }
 }
 </script>
