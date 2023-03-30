@@ -8,15 +8,6 @@ public class MatjibBackApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MatjibBackApplication.class, args);
-
-		GoogleCrawler google = new GoogleCrawler();
-		google.printGoogleScore();
-
-		KakaoCrawler kakao = new KakaoCrawler();
-		kakao.printKakaoScore();
-
-		NaverCrawler naver = new NaverCrawler();
-		naver.printNaverScore();
 	}
 
 }
