@@ -6,9 +6,9 @@
       <div class="profile">
         <i class="fa fa-graduation-cap" aria-hidden="true"></i>
         <router-link to="/mypage" style="text-align: left;">
-          <div style="margin-left: 10px;" v-if="$store.state.account.id"> {{ $store.state.account.nickname }} </div>
+          <div style="margin-left: 10px;" v-if="$store.state.account.nickname"> {{ $store.state.account.nickname }} </div>
         </router-link>
-        <div style="margin-left: 10px;" v-if="!$store.state.account.id">로그인 후 사용해주세요.</div>
+        <div style="margin-left: 10px;" v-if="!$store.state.account.nickname">로그인 후 사용해주세요.</div>
         <a to="/" v-else @click="logout()" style="display: flex; align-items: center; margin-left: auto;">
           <div style="margin-right: 5px;">
             <i class="fa fa-sign-out" aria-hidden="true" style="float: right"></i>
@@ -63,11 +63,12 @@ export default {
   props: {
     msg: String
   },
+
   setup() {
     const logout = () => {
       axios.post("/matjib/member/logout").then(() => {
-        store.commit('setAccount', 0);
         store.commit('setNickname', 0);
+        sessionStorage.clear();
         router.push({path: "/"});
       });
     }

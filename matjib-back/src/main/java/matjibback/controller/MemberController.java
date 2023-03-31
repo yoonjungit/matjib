@@ -1,5 +1,6 @@
 package matjibback.controller;
 
+import io.jsonwebtoken.Claims;
 import matjibback.entity.Member;
 import matjibback.naverLogin.NaverLoginService;
 import matjibback.naverLogin.NaverUserInfo;
@@ -8,9 +9,7 @@ import matjibback.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -28,17 +27,12 @@ public class MemberController {
     JwtService jwtService;
 
     @PostMapping("matjib/member/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> params, HttpServletResponse res){
+    public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res){
         NaverUserInfo response = naverLoginService.getUserNaverProfile(params.get("tempToken"), params.get("callbackState"));
-        String token = response.getId();
-        int id ;
-        String nickname;
-        Member member = memberRepository.findMembersByToken(token);
+        String naverID = response.getId();
+        Member member = memberRepository.findMembersByToken(naverID);
 
-        if (member != null){
-            id = member.getId();
-            nickname = member.getNickname();
-        } else {
+        if (member == null){
             Member newMember = new Member();
             newMember.setToken(response.getId());
             newMember.setNickname(response.getNickname());
@@ -48,22 +42,18 @@ public class MemberController {
             newMember.setBirthyear(Integer.parseInt(response.getBirthyear()));
 
             memberRepository.save(newMember);
-            id = newMember.getId();
-            nickname = newMember.getNickname();
+            member = newMember;
         }
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", id);
-        data.put("nickname", nickname);
 
-        String loginToken = jwtService.getToken("id", id);
+        String nickname = member.getNickname();
+        String loginToken = jwtService.getToken("id", member.getId());
 
-        Cookie cookie =new Cookie("token", loginToken);
-        cookie.setHttpOnly(true);
+        Cookie cookie = new Cookie("token", loginToken);
         cookie.setPath("/");
 
         res.addCookie(cookie);
-        return new ResponseEntity<>(data, HttpStatus.OK);
 
+        return new ResponseEntity<>(nickname, HttpStatus.OK);
     }
 
     @PostMapping("/matjib/member/logout")
@@ -74,5 +64,16 @@ public class MemberController {
 
         res.addCookie(cookie);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/api/account/check")
+    public ResponseEntity check(@CookieValue(value = "token", required = false)String token){
+        Claims claims = jwtService.getClaims(token);
+
+        if (claims != null){
+            int id = Integer.parseInt(claims.get("id").toString());
+            return new ResponseEntity<>(id, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.OK);
+
     }
 }

@@ -6,7 +6,6 @@ const store = createStore({
         return {
             loginState : 0,
             account : {
-                id : 0,
                 nickname : 0
             }
         }
@@ -15,9 +14,6 @@ const store = createStore({
     plugins: [createPersistedState()],
 
     mutations: {
-        setAccount(state, payload) {
-            state.account.id = payload;
-        },
         setNState(state, payload) {
             state.loginState = payload;
         },
