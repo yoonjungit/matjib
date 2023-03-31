@@ -1,6 +1,7 @@
 package matjibback.service;
 
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -12,7 +13,9 @@ import java.util.Map;
 
 @Service("jwtService")
 public class JwtServiceImpl implements JwtService{
-    private String secretKey = "aksdjlkasjdlkasjdiosadhoaaskjhdkashdkjashdjkashkjdhakjishd";
+
+    @Value("${jwt_secret}")
+    private String secretKey;
 
     @Override
     public String getToken(String key, Object value) {
