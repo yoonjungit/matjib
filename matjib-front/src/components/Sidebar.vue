@@ -65,12 +65,17 @@ export default {
   },
 
   setup() {
-    const logout = () => {
-      axios.post("/matjib/member/logout").then(() => {
+    const logout = async() => {
+      await axios.post("/matjib/member/logout").then(() => {
         store.commit('setNickname', 0);
         sessionStorage.clear();
         router.push({path: "/"});
-      });
+      })
+          .catch(() => {
+            store.commit('setNickname', 0);
+            sessionStorage.clear();
+            router.push({path: "/"});
+          })
     }
     return {logout}
   }

@@ -10,32 +10,34 @@ import axios from "axios";
 import router from "@/router";
 import store from "@/store/store";
 import VueJwtDecode from 'vue-jwt-decode'
+import VueCookies from "vue-cookies";
 
 export default {
   name: "Callback.vue",
 
-  mounted() {
+  setup() {
     //네이버 로그인 시 인가 코드 주소에서 가져오기
     const tempToken = window.location.href.split('=')[1].split('&')[0];
     //로그인 이후 state 가져오기
     const callbackState = window.location.href.split('=')[2];
 
-    const submit = () => {
-      axios.post('/matjib/member/login', {tempToken, callbackState}).then((res) => {
+    const submit = async () => {
+      try {
+        const res = await axios.post('/matjib/member/login', {tempToken, callbackState})
         const nickname = res.data;
-        store.commit('setNickname', nickname);
+        const token = VueCookies.get('token')
+        const expTime = VueJwtDecode.decode(token).exp;
 
-        const token = this.$cookies.get("token")
-        const expTime = VueJwtDecode.decode(this.$cookies.get("token")).exp;
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('expTime', expTime);
-
-        router.push({path:'/search'});
-      })
-          .catch((error) => {
-            alert(error + "\n로그인에 실패하였습니다.")
-          })
+        store.commit('setNickname', nickname);
+        await router.push({path: '/search'});
+      } catch (error) {
+        alert(error + "\n로그인에 실패하였습니다.")
+        await router.push({path: '/'})
+      }
     }
+
     //네이버 로그인 실패 시 -> 로그인 실패 알림 및 다시 로그인 화면("/")으로 가기
     if (tempToken.includes("access")) {
       alert("로그인에 실패하였습니다.")

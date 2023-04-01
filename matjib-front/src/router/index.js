@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory} from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import Archive from "@/pages/Archive.vue";
 import List from "@/pages/List.vue";
 import Search from "@/pages/Search.vue";
@@ -8,12 +8,12 @@ import Callback from "@/pages/callback.vue";
 import store from "@/store/store";
 
 const routes = [
-    { path: '/archive', component: Archive, meta: { requiresAuth: true } },
-    { path: '/list', component: List, meta: { requiresAuth: true } },
-    { path: '/search', component: Search, meta: { requiresAuth: true } },
-    { path: '/mypage', component: MyPage, meta: { requiresAuth: true } },
-    { path: '/', component: Login, meta: { public: true }  },
-    { path: '/callback', component: Callback, meta: { public: true } },
+    {path: '/archive', component: Archive, meta: {requiresAuth: true}},
+    {path: '/list', component: List, meta: {requiresAuth: true}},
+    {path: '/search', component: Search, meta: {requiresAuth: true}},
+    {path: '/mypage', component: MyPage, meta: {requiresAuth: true}},
+    {path: '/', component: Login, meta: {public: true}},
+    {path: '/callback', component: Callback, meta: {public: true}},
 ];
 
 const router = createRouter({
@@ -27,24 +27,27 @@ router.beforeEach((to, from, next) => {
     const token = sessionStorage.getItem('token');
     const tokenExpireTime = sessionStorage.getItem('expTime');
 
-    //로그인 했는데 public 페이지에 있으면 검색 페이지로 라우팅
-    if (isPublic && token) {
+    const logout = () => {
+        store.commit('setNickname', 0);
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('expTime');
+        next('/');
+    }
+
+    if (isPublic && token) {            //로그인 했는데 public 페이지에 있으면 검색 페이지로 라우팅
         return next('/search');
     } else if (requiresAuth && !token) {
         // 로그인 안한 사용자는 로그인 페이지로 이동
         alert("로그인 이후 이용 가능합니다.")
-        return next('/');
+        logout();
     } else if (requiresAuth && token && tokenExpireTime) {
         // 토큰이 있고 로그인이 필요한 페이지인 경우
         const now = new Date().getTime() / 1000; // 현재 시간
         const expireTime = parseInt(tokenExpireTime); // 만료 시간
         if (now > expireTime) {
             // 토큰이 만료되었으면 로그인 페이지로 이동
-            alert("다시 로그인 해주세요.")
-            store.commit('setNickname', 0);
-            sessionStorage.removeItem('token');
-            sessionStorage.removeItem('expTime');
-            return next('/');
+            alert("다시 로그인 해주세요.");
+            logout();
         }
     }
     next();
