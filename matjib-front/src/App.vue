@@ -27,7 +27,7 @@ export default {
   position: sticky;
   height: 100vh;
   weight: 100%;
-  background-color: navajowhite;
+  /*background-color: navajowhite;*/
 }
 RouterView{
   margin: 10px;
