@@ -105,6 +105,8 @@ export default {
         if (res.status == 200) {
           store.commit('setNickname', res.data);
           alert(res.data + "로 변경성공")
+        } else {
+          alert("변경에 실패했습니다.");
         }
       }
     },
@@ -116,6 +118,8 @@ export default {
         if (res.status == 200) {
           alert("탈퇴완료")
           this.logout();
+        } else {
+          alert("탈퇴에 실패했습니다.");
         }
       }
     }
