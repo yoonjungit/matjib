@@ -34,6 +34,9 @@ router.beforeEach((to, from, next) => {
         next('/');
     }
 
+    if(!token){
+        store.commit('setNickname', 0);
+    }
     if (isPublic && token) {            //로그인 했는데 public 페이지에 있으면 검색 페이지로 라우팅
         return next('/search');
     } else if (requiresAuth && !token) {
