@@ -22,8 +22,6 @@ public class NaverProfileResponse {
         public String id;
         public String nickname;
         public String email;
-        public String name;
-        public String birthday;
-        public String birthyear;
+
     }
 }

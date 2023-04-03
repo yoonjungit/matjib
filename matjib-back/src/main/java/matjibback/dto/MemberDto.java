@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class MemberDto {
-    private int id;
+    private int memid;
 
     private String token;
 

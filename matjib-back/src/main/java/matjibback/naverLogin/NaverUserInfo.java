@@ -8,10 +8,7 @@ import lombok.*;
 @Getter
 @ToString
 public class NaverUserInfo {
-    private String id;
+    private String nToken;
     private String nickname;
     private String email;
-    private String name;
-    private String birthday;
-    private String birthyear;
 }

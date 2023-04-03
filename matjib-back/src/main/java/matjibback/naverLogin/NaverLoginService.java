@@ -60,15 +60,10 @@ public class NaverLoginService {
         NaverProfileResponse naverProfileResponse = gson1.fromJson(response.getBody().toString(), NaverProfileResponse.class);
         NaverProfileResponse.Response naverProfileInfo = naverProfileResponse.getResponse();
 
-
-        System.out.println(naverProfileInfo.getName());
         return NaverUserInfo.builder()
-                .id(naverProfileInfo.getId())
+                .nToken(naverProfileInfo.getId())
                 .nickname(naverProfileInfo.getNickname())
                 .email(naverProfileInfo.getEmail())
-                .name(naverProfileInfo.getName())
-                .birthday(naverProfileInfo.getBirthday())
-                .birthyear(naverProfileInfo.getBirthyear())
                 .build();
     }
 

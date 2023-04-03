@@ -1,6 +1,6 @@
 package matjibback.controller;
 
-import io.jsonwebtoken.Claims;
+import matjibback.entity.Levels;
 import matjibback.entity.Member;
 import matjibback.naverLogin.NaverLoginService;
 import matjibback.naverLogin.NaverUserInfo;
@@ -16,7 +16,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 public class MemberController {
@@ -30,27 +29,24 @@ public class MemberController {
     @Autowired
     MemberService memberService;
 
+
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("matjib/member/login")
     public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res) {
         NaverUserInfo response = naverLoginService.getUserNaverProfile(params.get("tempToken"), params.get("callbackState"));
-        String naverID = response.getId();
-        String nickname1 = response.getNickname();
-        System.out.println("별명 " + nickname1);
-        Member member = memberRepository.findMembersByToken(naverID);
+        String nToken = response.getNToken();
+        Member member = memberRepository.findMembersByToken(nToken);
 
         if (member == null) {
             Member newMember = new Member();
-            newMember.setToken(response.getId());
+            newMember.setToken(nToken);
             newMember.setNickname(response.getNickname());
             newMember.setEmail(response.getEmail());
-            newMember.setName(response.getName());
-            newMember.setBirthday(response.getBirthday());
-            newMember.setBirthyear(Integer.parseInt(response.getBirthyear()));
-
+            newMember.setLevel(Levels.Ba);
             memberRepository.save(newMember);
             member = newMember;
         }
+        member.setNNickname(response.getNickname());
 
         String nickname = member.getNickname();
         String loginToken = jwtService.getToken("id", member.getId());
@@ -59,7 +55,6 @@ public class MemberController {
         cookie.setPath("/");
 
         res.addCookie(cookie);
-
         return new ResponseEntity<>(nickname, HttpStatus.OK);
     }
 
@@ -86,11 +81,11 @@ public class MemberController {
         }
         Member member = result.get(true);
         String nickname = params.get("nickname");
-//        if (nickname.equals("")){
-//            member.setNickname(nicknameN);
-//        }else{
-        member.setNickname(nickname);
-//        }
+        if (nickname.equals("")) {
+            member.setNickname(member.getNNickname());
+        } else {
+            member.setNickname(nickname);
+        }
         memberRepository.save(member);
         return new ResponseEntity<>(nickname, HttpStatus.OK);
     }

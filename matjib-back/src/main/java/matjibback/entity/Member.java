@@ -8,29 +8,26 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name="members")
+@Table(name="member")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="mem_id")
     private int id;
 
-    @Column(length = 100, unique=true, nullable = false)
+    @Column(unique=true, nullable = false)
     private String token;
 
     @Column(length = 50, nullable = false)
     private String nickname;
 
-    @Column(length = 50, nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(length = 50, nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private Levels level;
 
-    @Column(length = 5, nullable = false)
-    private String birthday;
-
-    @Column(nullable = false)
-    private int birthyear;
-
+    @Transient
+    private String nNickname;
 
 }
