@@ -55,7 +55,7 @@ export default {
   background-image: linear-gradient(rgba(0, 0, 0, 0.527), rgba(0, 0, 0, 0.5)), url('~@/assets/bg.jpg'); /*어둡게 적용*/
   background-repeat: repeat;
   background-position: center;
-  animation: movebg 15s linear infinite alternate; /* 15s : 목표지점까지 걸리는 시간 (속도), linear : 끝에 다다를 때 속도 일정, infinite : 무한반복, alternate : 왕복하기 */
+  animation: movebg 15s linear infinite alternate; /* 15s : 목표 지점까지 걸리는 시간 (속도), linear : 끝에 다다를 때 속도 일정, infinite : 무한반복, alternate : 왕복하기 */
 }
 
 @keyframes movebg {
