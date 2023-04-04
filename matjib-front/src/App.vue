@@ -15,7 +15,7 @@ import Sidebar from "@/components/Sidebar.vue";
 export default {
   name: 'App',
   components: {
-    Sidebar,
+    Sidebar
   }
 }
 </script>
@@ -26,7 +26,7 @@ export default {
   font-weight: 500;
   position: sticky;
   height: 100vh;
-  weight: 100%;
+  width: 100%;
   /*background-color: navajowhite;*/
 }
 RouterView{
