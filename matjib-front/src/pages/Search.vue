@@ -1,18 +1,17 @@
 <template>
   <div class="search">
-    <KakaoMap/>
+    <Map/>
   </div>
 </template>
 
 <script>
-import KakaoMap from "@/components/Map.vue";
+import Map from "@/components/Map.vue";
 
 export default {
   name: 'Search',
   components: {
-    KakaoMap
+    Map,
   },
-
 }
 </script>
 

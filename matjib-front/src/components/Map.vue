@@ -18,13 +18,14 @@
 
 <script>
 export default {
-  name: "KakaoMap",
+  name: "Map",
   data() {
     return {
       map: null,
       marker: null,
       infowindow: null,
-      zoomControl: null
+      zoomControl: null,
+      geocoder: null
     };
   },
   mounted() {
@@ -44,17 +45,19 @@ export default {
       const container = document.getElementById("map");
       const options = {
         center: new kakao.maps.LatLng(38.04007, 126.92658), // 지도의 중심좌표벨
-        level: 4, //지도의 확대 레
+        level: 4, //지도의 확대 레벨
       };
 
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
       this.map = new kakao.maps.Map(container, options);
+      this.geocoder = new kakao.maps.services.Geocoder();
 
-      // 지도에 확대 축소 컨트롤을 생성한다
+
+      // 지도에 확대 축소 컨트롤을 생성한다.
       this.zoomControl = new kakao.maps.ZoomControl();
 
-      // 지도의 우측에 확대 축소 컨트롤을 추가한다
+      // 지도의 우측에 확대 축소 컨트롤을 추가한다.
       this.map.addControl(this.zoomControl, kakao.maps.ControlPosition.RIGHT);
 
       // 지도에 마커를 생성하고 표시한다
