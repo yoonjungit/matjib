@@ -1,12 +1,17 @@
 <template>
   <div class="d-flex flex-column flex-shrink-0 p-3" style=" height: 100vh">
     <div class="sidebar">
-      <router-link to="/search" style="font-size:30px; font-weight : bold; text-align: center">찐찐Univ</router-link>
+      <router-link to="/search" style="font-size:30px; font-weight : bold; text-align: center">
+        찐찐Univ&nbsp;<i class="fa fa-cutlery" aria-hidden="true"></i>
+      </router-link>
       <br>
       <div class="profile">
         <i class="fa fa-graduation-cap" aria-hidden="true"></i>
         <router-link to="/mypage" style="text-align: left;">
-          <div style="margin-left: 10px;" v-if="$store.state.account.nickname"> {{ $store.state.account.nickname }} </div>
+          <div style="margin-left: 10px;" v-if="$store.state.account.nickname"> {{
+              $store.state.account.nickname
+            }}
+          </div>
         </router-link>
         <div style="margin-left: 10px;" v-if="!$store.state.account.nickname">로그인 후 사용해주세요.</div>
         <a to="/" v-else @click="logout()" style="display: flex; align-items: center; margin-left: auto;">
@@ -24,18 +29,17 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/list" class="">
-            <i class="fa fa-book" aria-hidden="true"></i> &nbsp;
-            List
+          <router-link to="/archive" class="">
+            <i class="fa fa-star" aria-hidden="true"></i> &nbsp;
+            Bookmark
           </router-link>
         </li>
         <li>
-          <router-link to="/archive" class="">
-            <i class="fa fa-folder-o" aria-hidden="true"></i> &nbsp;
-            Archive
+          <router-link to="/list" class="">
+            <i class="fa fa-user" aria-hidden="true"></i> &nbsp;
+            MyPage
           </router-link>
         </li>
-
       </ul>
       <hr>
       <div class="dropdown">
@@ -65,7 +69,7 @@ export default {
   },
 
   setup() {
-    const logout = async() => {
+    const logout = async () => {
       await axios.post("/matjib/member/logout").then(() => {
         store.commit('setNickname', 0);
         sessionStorage.clear();

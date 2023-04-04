@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,10 +29,10 @@ public class BookmarkController {
     RestaurantRepository restaurantRepository;
 
     //북마크 리스트 가져오기(Archive)
-    @GetMapping("matjib/bookmark/get")
-    public ResponseEntity getBookmark(@RequestBody Map<String, String> memInfo, HttpServletResponse res) {
+    @PostMapping("/matjib/bookmark/get")
+    public ResponseEntity getBookmark(@RequestBody String token, HttpServletResponse res) {
         //1. 토큰 유효성 검사 후 멤버 객체 반환
-        Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(memInfo.get("token"));
+        Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
         if (result.containsKey(false)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);   //토큰이 유효하지 않은 경우
         } else if (result.get(true) == null) {
@@ -40,7 +41,6 @@ public class BookmarkController {
         //2. 오류 없을 시 멤버 객체 가져오기
         Member member = result.get(true);
         int memId = member.getId();     //멤버id가져오기
-
         //3. 북마크한 음식점 가져오기
         //해당 멤버가 북마크 한 리스트(a) 가져오기
         List<Bookmark> bookmarkList = bookmarkRepository.findBookmarkByMemId(memId);
@@ -63,7 +63,7 @@ public class BookmarkController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Member member = result.get(true);
-        int resId = Integer.parseInt(memInfo.get("resId"));
+        int resId = Integer.parseInt(String.valueOf(memInfo.get("resId")));
 
         Bookmark bookmark = new Bookmark();
         bookmark.setMemId(member.getId());
@@ -74,7 +74,8 @@ public class BookmarkController {
     }
 
     //북마크 삭제(Archive, 지도API)
-    @GetMapping("/matjib/bookmark/delete")
+    @Transactional
+    @PostMapping("/matjib/bookmark/delete")
     public ResponseEntity deleteBookmark(@RequestBody Map<String, String> memInfo, HttpServletResponse res) {
         Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(memInfo.get("token"));
         if (result.containsKey(false)) {
@@ -83,7 +84,7 @@ public class BookmarkController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Member member = result.get(true);
-        int resId = Integer.parseInt(memInfo.get("resId"));
+        int resId = Integer.parseInt(String.valueOf(memInfo.get("resId")));
         int memId = member.getId();
 
         bookmarkRepository.deleteBookmarkByResIdAndMemId(resId, memId);
