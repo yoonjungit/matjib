@@ -1,19 +1,10 @@
 <template>
-  <div>
-    <div class="search">
-      <input type="text" name="searchIndex" onclick="this.value ='';" value="식당명을 입력하세요.">
-      <button type="submit">검색</button>
+    <div id="map">
+      <div class="search">
+        <input type="text" name="searchIndex" onclick="this.value ='';" value="식당명을 입력하세요.">
+        <button type="submit">검색</button>
+      </div>
     </div>
-    <div id="map"></div>
-    <div class="button-group">
-      <button @click="changeSize(0)">Hide</button>
-      <button @click="changeSize(400)">show</button>
-      <button @click="displayMarker(markerPositions1)">marker set 1</button>
-      <button @click="displayMarker(markerPositions2)">marker set 2</button>
-      <button @click="displayMarker([])">marker set 3 (empty)</button>
-      <button @click="displayInfoWindow">infowindow</button>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -25,7 +16,8 @@ export default {
       marker: null,
       infowindow: null,
       zoomControl: null,
-      geocoder: null
+      geocoder: null,
+      content: '<div class="wrap"><div class="info"><div class="title">식당이름</div><div class="buttons"><button>리스트</button><button>북마크</button></div><div class="body"><div class="address">주소</div><div class="naver">네이버 별점/갯수</div><div class="kakao">카카오별점/갯수</div><div class="google">구글별점/갯수</div></div></div></div></div></div>' // 인포윈도우에 표시할 내용
     };
   },
   mounted() {
@@ -68,86 +60,49 @@ export default {
 
       // 마커 위에 표시할 인포윈도우를 생성한다
       this.infowindow = new kakao.maps.InfoWindow({
-        content: '<div style="padding:13px;"><div class="name">식당이름</div><div class="buttons"><button>리스트</button><button>북마크</button></div><div class="body"><div class="address">주소</div><div class="naver">네이버 별점/갯수</div><div class="kakao">카카오별점/갯수</div><div class="google">구글별점/갯수</div></div></div></div>' // 인포윈도우에 표시할 내용
+        content: this.content
       });
-
-       //인포윈도우를 지도에 표시한다
-       this.infowindow.open(this.map, this.marker);
 
       // 마커에 클릭 이벤트를 등록한다 (우클릭 : rightclick)
       kakao.maps.event.addListener(this.marker, 'click', function () {
-        alert('마커를 클릭했습니다!');
-        this.infowindow.setMap(this.map);
-      })
-    },
-    changeSize(size) {
-      const container = document.getElementById("map");
-      container.style.width = `${size}px`;
-      container.style.height = `${size}px`;
-      this.map.relayout();
-    },
-    displayMarker(markerPositions) {
-      if (this.markers.length > 0) {
-        this.markers.forEach((marker) => marker.setMap(null));
-      }
+        this.infowindow.open(this.map, this.marker);
+      }.bind(this));
 
-      const positions = markerPositions.map(
-          (position) => new kakao.maps.LatLng(...position)
-      );
-
-      if (positions.length > 0) {
-        this.markers = positions.map(
-            (position) =>
-                new kakao.maps.Marker({
-                  map: this.map,
-                  position,
-                })
-        );
-
-        const bounds = positions.reduce(
-            (bounds, latlng) => bounds.extend(latlng),
-            new kakao.maps.LatLngBounds()
-        );
-
-        this.map.setBounds(bounds);
-      }
-    },
-    displayInfoWindow() {
-      if (this.infowindow && this.infowindow.getMap()) {
-        //이미 생성한 인포윈도우가 있기 때문에 지도 중심좌표를 인포윈도우 좌표로 이동시킨다.
-        this.map.setCenter(this.infowindow.getPosition());
-        return;
-      }
-
-      var iwContent = '<div style="padding:5px;">Hello World!</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-          iwPosition = new kakao.maps.LatLng(33.450701, 126.570667), //인포윈도우 표시 위치입니다
-          iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
-
-      this.infowindow = new kakao.maps.InfoWindow({
-        map: this.map, // 인포윈도우가 표시될 지도
-        position: iwPosition,
-        content: iwContent,
-        removable: iwRemoveable,
-      });
-
-      this.map.setCenter(iwPosition);
+      // 지도에 클릭 이벤트를 등록한다.
+      kakao.maps.event.addListener(this.map, 'click', function () {
+        this.infowindow.close();
+      }.bind(this));
     },
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
+.wrap {position: absolute;left: 0;bottom: 40px;width: 288px;height: 132px;margin-left: -144px;text-align: left;overflow: hidden;font-size: 12px;font-family: 'Malgun Gothic', dotum, '돋움', sans-serif;line-height: 1.5;}
+.wrap * {padding: 0;margin: 0;}
+.wrap .info {width: 286px;height: 120px;border-radius: 5px;border-bottom: 2px solid #ccc;border-right: 1px solid #ccc;overflow: hidden;background: #fff;}
+.wrap .info:nth-child(1) {border: 0;box-shadow: 0px 1px 2px #888;}
+.info .title {padding: 5px 0 0 10px;height: 30px;background: #eee;border-bottom: 1px solid #ddd;font-size: 18px;font-weight: bold;}
+.info .close {position: absolute;top: 10px;right: 10px;color: #888;width: 17px;height: 17px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close.png');}
+.info .close:hover {cursor: pointer;}
+.info .body {position: relative;overflow: hidden;}
+.info .desc {position: relative;margin: 13px 0 0 90px;height: 75px;}
+.desc .ellipsis {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+.desc .jibun {font-size: 11px;color: #888;margin-top: -2px;}
+.info .img {position: absolute;top: 6px;left: 5px;width: 73px;height: 71px;border: 1px solid #ddd;color: #888;overflow: hidden;}
+.info:after {content: '';position: absolute;margin-left: -12px;left: 50%;bottom: 0;width: 22px;height: 12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
+.info .link {color: #5085BB;}
+
+.search {
+  position: relative;
+  z-index: 2;
+}
+
 #map {
-  width: 1500px;
-  height: 800px;
-}
-
-.button-group {
-  margin: 10px 0;
-}
-
-button {
-  margin: 0 3px;
+  z-index: 1;
+  position: relative;
+  width: 100%;
+  height: 100vh;
 }
 </style>
