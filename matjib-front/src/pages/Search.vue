@@ -1,13 +1,16 @@
 <template>
   <div class="search">
-    search
+    <KakaoMap/>
   </div>
 </template>
 
 <script>
+import KakaoMap from "@/components/Map.vue";
+
 export default {
   name: 'Search',
   components: {
+    KakaoMap
   },
 
 }
