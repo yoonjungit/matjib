@@ -8,9 +8,8 @@
       <div class="profile">
         <i class="fa fa-graduation-cap" aria-hidden="true"></i>
         <router-link to="/mypage" style="text-align: left;">
-          <div style="margin-left: 10px;" v-if="$store.state.account.nickname"> {{
-              $store.state.account.nickname
-            }}
+          <div style="margin-left: 10px;" v-if="$store.state.account.nickname">
+            {{ $store.state.account.nickname }}
           </div>
         </router-link>
         <div style="margin-left: 10px;" v-if="!$store.state.account.nickname">로그인 후 사용해주세요.</div>
@@ -35,7 +34,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/list" class="">
+          <router-link to="/mypage" class="">
             <i class="fa fa-user" aria-hidden="true"></i> &nbsp;
             MyPage
           </router-link>
