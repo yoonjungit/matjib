@@ -44,4 +44,14 @@ public class RestaurantController {
         }
         return restaurants;
     }
+
+    @PostMapping("/matjib/restaurants/getInfo")
+    public List<Restaurant> getResInfo(@RequestBody Map<String, String> params) {
+        float lat= Float.parseFloat(String.valueOf(params.get("lat")));
+        float lng= Float.parseFloat(String.valueOf(params.get("lng")));
+        System.out.println(lat + lng);
+        List<Restaurant> restaurants = restaurantRepository.findRestaurantByLatitudeAndLongitude(lat, lng);
+        System.out.println("ddd검색결과 : " + restaurants.size() + "건");
+        return restaurants;
+    }
 }

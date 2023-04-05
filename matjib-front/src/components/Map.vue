@@ -1,13 +1,30 @@
 <template>
-  <div id="map">
-    <div className="search">
-      <form v-on:submit.prevent="search">
-        <input type="text" v-model="resName">
-        <input type="submit" value="검색">
-      </form>
-<!--      <p id="latlon"></p> &lt;!&ndash;남서쪽/북동쪽 위도, 경도 표시 하려고 임시로 만듬&ndash;&gt;-->
+  <div id="main">
+    <div class="controller">
+      <div id="infowindow">
+        <i @click="addBM()" class="fa fa-star" aria-hidden="true"></i>
+        <span style="font-size: 25px">{{ infoRes.resName }}</span>
+        <span>대현동 56-129번지</span>
+        <div>
+          <span><img src="https://map.naver.com/v5/assets/icon/favicon-32x32.png" width="20px" height="20px"> 네이버 평점/갯수</span>
+          <span><img src="https://map.kakao.com/favicon.ico" width="20px" height="20px"> 카카오별점/갯수</span>
+          <span><img src="https://www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico" width="20px"
+                     height="20px"> 구글별점/갯수</span>
+        </div>
+      </div>
+      <div id="search">
+        <button id="getMarkersBtn" @click="getMarkers()">근처 맛집 보기</button>
+        <form v-on:submit.prevent="search">
+          <input type="text" v-model="resName">
+          <input type="submit" value="검색">
+        </form>
+        <!--      <p id="latlon"></p> &lt;!&ndash;남서쪽/북동쪽 위도, 경도 표시 하려고 임시로 만듬&ndash;&gt;-->
+      </div>
+    </div>
+    <div id="map">
     </div>
   </div>
+
 </template>
 
 <script>
@@ -18,11 +35,13 @@ export default {
   name: "Map",
   data() {
     return {
+      infoRes:Object,
       l1: null,
       l2: null,
       l3: null,
       l4: null,
       markers: [],
+      restaurantArray: [Object],
       clusterer: null,
       resName: "",
       resAddress: "",
@@ -33,7 +52,9 @@ export default {
       kCount: null,
       gCount: null,
       map: null,
+      show: false,
       infowindow: null,
+      customOverlay: null,
       zoomControl: null,
       geocoder: null,
       content: '<div class="wrap"><div class="info"><div class="title">restaurant.resName<button id="bookmark">북마크</button></div><div class="body"><div class="address">주소</div><div class="naver"><img src="https://map.naver.com/v5/assets/icon/favicon-32x32.png" width="20px" height="20px"> 네이버 평점/갯수</div><div class="kakao"><img src="https://map.kakao.com/favicon.ico" width="20px" height="20px"> 카카오별점/갯수</div><div class="google"><img src="https://www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico" width="20px" height="20px"> 구글별점/갯수</div></div></div></div></div></div>' // 인포윈도우에 표시할 내용
@@ -56,7 +77,7 @@ export default {
     initMap() {
       const container = document.getElementById("map");
       const options = {
-        center: new kakao.maps.LatLng(37.555195, 126.936873), // 지도의 중심좌표
+        center: new kakao.maps.LatLng(37.555184166, 126.936910322), // 지도의 중심좌표
         level: 1, //지도의 확대 레벨
       };
       //지도 객체를 등록합니다.
@@ -99,31 +120,15 @@ export default {
         /*var message = '<p>남서쪽<br>' + this.l1 + '<br>' + this.l3 + '<br>북동쪽<br>' + this.l2 + '<br>' + this.l4 + '</p>';
         var resultDiv = document.getElementById('latlon');
         resultDiv.innerHTML = message;*/
-        this.getMarkers();
-      }.bind(this));
-    },
-
-    showInfowindow() {
-      // 마커 위에 표시할 인포윈도우를 생성한다
-      this.infowindow = new kakao.maps.InfoWindow({
-        content: this.restaurant.resName
-      });
-
-      // 마커에 클릭 이벤트를 등록한다 (우클릭 : rightclick)
-      kakao.maps.event.addListener(this.marker, 'click', function () {
-        this.infowindow.open(this.map, this.marker);
-      }.bind(this));
-
-      // 지도에 클릭 이벤트를 등록한다.
-      kakao.maps.event.addListener(this.map, 'click', function () {
-        this.infowindow.close();
       }.bind(this));
     },
 
     getMarkers() {
       //검색결과 담을 반응형 배열 선언
       const state = reactive({
-        restaurants: []
+        restaurants: [],
+        show: false,
+        marker: null
       });
 
       //서버에 음식점 리스트 요청
@@ -135,36 +140,49 @@ export default {
         longE: this.l4, //경도(max)
       })
           .then(({data}) => {
-              state.restaurants = data; //결과 restaurant배열에 저장
-              console.log("검색 결과 : " + state.restaurants.length + "건");
-              console.log("검색 결과 : " + JSON.stringify(state.restaurants));
+            state.restaurants = data; //결과 restaurant배열에 저장
+            console.log("검색 결과 : " + state.restaurants.length + "건");
+            console.log("검색 결과 : " + JSON.stringify(state.restaurants));
 
-              state.restaurants.forEach((restaurant) => {
-                //마커 찍기
-                console.log("이거확인" + this.markers.length);
-                if (this.markers.length > 19) {
-                    this.markers.forEach((marker) => marker.setMap(null));
-                    this.markers = [];
-                  }
-                if (restaurant.latitude !== 0) {
-                  //예외처리 : 만약 위도가 0이 아니라면
-                  //이전 마커 지우는것만 추가해주세요!
+            state.restaurants.forEach((restaurant) => {
+              //마커 찍기
+              console.log("이거확인" + this.markers.length);
+              /*if (this.markers.length > 19) {
+                this.markers.forEach((marker) => marker.setMap(null));
+                this.markers = [];
+              }*/
+              if (restaurant.latitude !== 0) {
+                //예외처리 : 만약 위도가 0이 아니라면
+                //이전 마커 지우는것만 추가해주세요!
+                console.log(restaurant.latitude, restaurant.longitude);
+                const coords = new kakao.maps.LatLng(
+                    restaurant.latitude,
+                    restaurant.longitude
+                );
+                state.marker = new kakao.maps.Marker({
+                  title: restaurant.resName,
+                  map: this.map,
+                  position: coords,
+                });
+                state.marker.setMap(this.map);
+                this.restaurantArray.push(restaurant);
+                this.markers.push(state.marker);
+                  /*var lat = marker.getPosition().getLat()
+                  var lng = marker.getPosition().getLng()
+                  console.log(lat);
+                  console.log(lng);*/
 
-                  console.log(restaurant.latitude, restaurant.longitude);
-                  const coords = new kakao.maps.LatLng(
-                      restaurant.latitude,
-                      restaurant.longitude
-                  );
-                  const marker = new kakao.maps.Marker({
-                    map: this.map,
-                    position: coords,
-                  });
-                  marker.setMap(this.map);
-
-                  this.markers.push(marker);
-                }
-                console.log(this.markers.length);
-              });
+                  /*const lat = restaurant.latitude
+                  const lng = restaurant.longitude*/
+                  /*console.log("이거" + lat);*/
+              }
+            // 마커에 클릭 이벤트를 등록한다 (우클릭 : rightclick)
+            kakao.maps.event.addListener(state.marker, 'click', function () {
+              const name = restaurant.resName;
+              this.showInfoWindow(name);
+            }.bind(this));
+              console.log(this.markers.length);
+            });
           })
           .catch((error) => {
             console.error(error); // 프로미스 자체에서 발생한 에러를 콘솔에 출력합니다.
@@ -172,10 +190,30 @@ export default {
       return {state};
     },
 
+    showInfoWindow(name) {
+      console.log("자자자자자자자" + name);
+    },
+
+    async setInfoWindow(lat, lng) {
+      try {
+        /*console.log(lat + lng)*/
+        const {data} = await axios.post("/matjib/restaurants/getInfo", {
+          lat: lat,
+          lng: lng,
+        });
+        this.infoRes = data;
+        console.log("검색 결과 : " + this.infoRes.length + "건");
+        console.log("검색 결과 : " + JSON.stringify(this.infoRes));
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
     search() {
       const state = reactive({
         restaurants: [],
       });
+
       console.log(this.resName);
       axios.post("/matjib/restaurants/search", {resName: this.resName}).then(({data}) => {
         state.restaurants = data;
@@ -195,7 +233,8 @@ export default {
           return {state}
         })
       })
-    },
+    }
+    ,
   },
 }
 </script>
@@ -212,64 +251,38 @@ export default {
   border-radius: 5px;
 }
 
-.wrap {
-  width: 288px;
-  height: 150px;
-}
-
-.wrap .info {
-  width: 286px;
-  height: 150px;
-  border-radius: 0;
-  border-bottom: 2px solid #ccc;
-  border-right: 1px solid #ccc;
-  overflow: hidden;
-  background: #fff;
-}
-
-.wrap .info:nth-child(1) {
-  border: 0;
-  box-shadow: 0 1px 2px #888;
-}
-
-.info .title {
-  padding: 5px 0 0 10px;
-  height: 40px;
-  background: #E74C3C;
-  border-bottom: 1px solid #ddd;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.info .body {
-  margin-left: 10px;
-  position: relative;
-  overflow: hidden;
-}
-
-.address {
-  font-size: 17px;
-  color: #E74C3C;
-}
-
-.search {
+#search {
+  display: flex;
   position: relative;
   z-index: 2;
+  padding-left: 10px;
+  width: 30%;
+  height: 100%;
 }
 
-#latlon {
-  padding: 12px;
-  width: 200px;
-  background: white;
+.controller {
+  display: flex;
   position: relative;
-  z-index: 2;
+  width: 100%;
+  height: 10vh;
+  vertical-align: middle;
 }
 
 #map {
   z-index: 1;
   position: relative;
   width: 100%;
+  height: 90vh;
+}
+
+#main {
+  position: relative;
   height: 100vh;
+}
+
+#infowindow {
+  padding-left: 20px;
+  height: 100%;
+  width: 70%;
 }
 </style>
