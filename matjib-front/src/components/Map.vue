@@ -1,35 +1,3 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Codespaces
-Marketplace
-Explore
-
-@zeehoonee
-yoonjungit
-/
-matjib
-Public
-Fork your own copy of yoonjungit/matjib
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-matjib/matjib-front/src/components/Map.vue
-@zeehoonee
-zeehoonee style : 인포윈도우 디자인, 지도 div 화면 꽉채우기, 검색창 지도 위에 올리기
-…
-Latest commit 231d9d3 2 hours ago
-History
-1 contributor
-108 lines (96 sloc)  4.47 KB
-
-
 <template>
   <div id="map">
     <div class="search">
@@ -64,7 +32,8 @@ export default {
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
       script.src =
-          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=" + process.env.VUE_APP_KAKAO_MAP_APP_KEY + "&libraries=services,clusterer,drawing";
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey="
+          + process.env.VUE_APP_KAKAO_MAP_APP_KEY + "&libraries=services,clusterer,drawing";
       document.head.appendChild(script);
     }
   },
