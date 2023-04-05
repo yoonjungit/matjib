@@ -33,8 +33,10 @@ History
 <template>
   <div id="map">
     <div class="search">
-      <input type="text" name="searchIndex" onclick="this.value ='';" value="식당명을 입력하세요.">
-      <button type="submit">검색</button>
+      <form v-on:submit.prevent="initMap">
+        <input type="text" v-model="searchIndex">
+        <input type="submit" value="검색">
+      </form>
     </div>
   </div>
 </template>
@@ -44,6 +46,7 @@ export default {
   name: "Map",
   data() {
     return {
+      searchIndex: "",
       map: null,
       marker: null,
       infowindow: null,
@@ -83,7 +86,7 @@ export default {
       this.map.addControl(this.zoomControl, kakao.maps.ControlPosition.RIGHT);
 
       // 주소로 좌표를 검색합니다
-      this.geocoder.addressSearch('강원도 춘천시 안마산로 133', function (result, status) {
+      this.geocoder.addressSearch(this.searchIndex, function (result, status) {
         // 정상적으로 검색이 완료됐으면
         if (status === kakao.maps.services.Status.OK) {
 
