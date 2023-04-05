@@ -37,8 +37,11 @@ public class RestaurantController {
         float latE= Float.parseFloat(String.valueOf(params.get("latE")));
         float longS= Float.parseFloat(String.valueOf(params.get("longS")));
         float longE= Float.parseFloat(String.valueOf(params.get("longE")));
-        List<Restaurant> restaurants = restaurantRepository.findRestaurantByLatitudeBetweenAndLongitudeBetween(latS, latE, longS, longE);
+        List<Restaurant> restaurants = restaurantRepository.findRestaurantByLatitudeBetweenAndLongitudeBetweenOrderByAvgScoreDesc(latS, latE, longS, longE);
         System.out.println("검색결과 : "+ restaurants.size() +"건");
+        if(restaurants.size()>20){
+            return restaurants.subList(0, 20);
+        }
         return restaurants;
     }
 }
