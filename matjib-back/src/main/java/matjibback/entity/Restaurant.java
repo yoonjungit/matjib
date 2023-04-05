@@ -34,4 +34,8 @@ public class Restaurant {
     private State state;
     @Column(name="avg_score")
     private float avgScore;
+    @Column(name="latitude_y")
+    private float latitude;
+    @Column(name="longitude_x")
+    private float longitude;
 }
