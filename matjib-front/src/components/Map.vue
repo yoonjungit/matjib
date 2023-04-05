@@ -5,6 +5,7 @@
         <input type="text" v-model="searchIndex">
         <input type="submit" value="검색">
       </form>
+      <p id="latlon"></p> <!--남서쪽/북동쪽 위도, 경도 표시 하려고 임시로 만듬-->
     </div>
   </div>
 </template>
@@ -41,8 +42,8 @@ export default {
     initMap() {
       const container = document.getElementById("map");
       const options = {
-        center: new kakao.maps.LatLng(38.04007, 126.92658), // 지도의 중심좌표
-        level: 4, //지도의 확대 레벨
+        center: new kakao.maps.LatLng(37.555195, 126.936873), // 지도의 중심좌표
+        level: 1, //지도의 확대 레벨
       };
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
@@ -53,6 +54,35 @@ export default {
       this.zoomControl = new kakao.maps.ZoomControl();
       // 지도의 우측에 확대 축소 컨트롤을 추가한다.
       this.map.addControl(this.zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+      // 지도가 이동, 확대, 축소로 인해 지도영역이 변경되면 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
+      kakao.maps.event.addListener(this.map, 'bounds_changed', function () {
+        var bounds = this.map.getBounds();
+
+        // 영역정보의 남서쪽 정보를 얻어옵니다
+        var swLatlng = bounds.getSouthWest();
+        // 스트링 변환 후 남서쪽 위도, 경도 자르기
+        var sw = swLatlng.toString().split(',');
+        var swLat = sw[0]
+        var swLng = sw[1]
+        var swLatitude = swLat.substr(1); // 최종 남서쪽 위도
+        var swLongitude = swLng.slice(0, -1); // 최종 남서쪽 경도
+
+        // 영역정보의 북동쪽 정보를 얻어옵니다
+        var neLatlng = bounds.getNorthEast();
+        // 스트링 변환 후 북동쪽 위도, 경도 잘라내기
+        var ne = neLatlng.toString().split(',');
+        var neLat = ne[0]
+        var neLng = ne[1]
+        var neLatitude = neLat.substr(1); // 최종 북동쪽 위도
+        var neLongitude = neLng.slice(0, -1); // 최종 북동쪽 경도
+
+        // 가져온 위도, 경도 정보 표시 (나중에 지울 것)
+        var message = '<p>남서쪽<br>' + swLatitude + '<br>' + swLongitude + '<br>북동쪽<br>' + neLatitude + '<br>' + neLongitude + '</p>';
+        var resultDiv = document.getElementById('latlon');
+        resultDiv.innerHTML = message;
+
+      }.bind(this));
 
       // 주소로 좌표를 검색합니다
       this.geocoder.addressSearch(this.searchIndex, function (result, status) {
@@ -145,6 +175,14 @@ export default {
 }
 
 .search {
+  position: relative;
+  z-index: 2;
+}
+
+#latlon {
+  padding: 12px;
+  width: 200px;
+  background: white;
   position: relative;
   z-index: 2;
 }
