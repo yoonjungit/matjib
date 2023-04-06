@@ -1,50 +1,70 @@
 <template>
   <div id="main">
-    <div class="controller">
-      <div id="infowindow">
-      <span v-if="show">
-        <i v-if="this.bookmarked" @click="deleteBM()" class="fa fa-star" aria-hidden="true"></i>
-        <i v-else @click="addBM" class="fa fa-star-o" aria-hidden="true"></i>
+    <div class="controller"> <!--controller-->
+
+      <div id="infowindow"> <!--infowindow-->
+        <div id="nameAddWindow"> <!--nameAddWindow-->
+          <span id="starNameWindow"> <!--starNameWindow-->
+          <span v-if="show"> <!--별 아이콘-->
+            <i v-if="this.bookmarked" @click="deleteBM()" class="fa fa-star" aria-hidden="true"></i>
+            <i v-else @click="addBM" class="fa fa-star-o" aria-hidden="true"></i>
+          </span> <!--별 아이콘-->
+          <span id="resTitle">{{ infoRes.resName }}</span> <!-- 음식점 이름 -->
+            </span> <!--/starNameWindow-->
+          <div>   <!-- 주소 -->
+            <span id="resAddress">{{ infoRes.address }}</span>
+          </div>  <!-- /주소 -->
+        </div> <!--/nameAddWindow-->
+
+        <div id="scoresWindow"> <!--scoresWindow-->
+          <div id="scores"> <!--scores-->
+            <span id="nIcon" v-if="show">
+            <img
+                src="https://user-images.githubusercontent.com/64455378/229777468-939349b7-cbcc-4e3c-a348-143629f0fe5a.jpg">
           </span>
-        <span style="font-size: 25px">{{ infoRes.resName }}</span>
-        <span>{{  infoRes.address }}</span>
-
-        <div>   <!-- 평점 -->
-          <span v-if="show">
-            <img src="https://user-images.githubusercontent.com/64455378/229777468-939349b7-cbcc-4e3c-a348-143629f0fe5a.jpg">
+            <span id="nScore">
+        <span v-if="infoRes.ncount>0"> {{ infoRes.nscore }}점 ({{ infoRes.ncount }}건)</span>
+        <span v-else-if="infoRes.ncount==0"> 후기 미제공</span>
+        <span v-else> &nbsp;</span>
           </span>
-          <span v-if="infoRes.ncount>0"> {{ infoRes.nscore }}  ({{ infoRes.ncount }})</span>
-          <span v-else-if="infoRes.ncount==0"> 후기 미제공</span>
-          <span v-else> &nbsp;</span>
-          <span v-if="show">&nbsp;
-            <img src="https://user-images.githubusercontent.com/64455378/229777466-f0dabb0e-e0c2-4dff-9587-8f1284c9ca21.jpg">
+            <span id="kIcon" v-if="show">&nbsp;
+            <img
+                src="https://user-images.githubusercontent.com/64455378/229777466-f0dabb0e-e0c2-4dff-9587-8f1284c9ca21.jpg">
           </span>
-          <span v-if="infoRes.kcount>0">{{ infoRes.kscore }}  ({{ infoRes.kcount }})</span>
-          <span v-else-if="infoRes.kcount==0"> 후기 미제공</span>
-          <span v-else> &nbsp;</span>
-
-          <span v-if="show">&nbsp;
-            <img src="https://user-images.githubusercontent.com/64455378/229777461-da741945-9607-45f0-956e-467942bcf0ac.jpg">
+            <span id="kScore">
+        <span v-if="infoRes.kcount>0"> {{ infoRes.kscore }}점 ({{ infoRes.kcount }}건)</span>
+        <span v-else-if="infoRes.kcount==0"> 후기 미제공</span>
+        <span v-else> &nbsp;</span>
+            </span>
+            <span id="gIcon" v-if="show">&nbsp;
+            <img
+                src="https://user-images.githubusercontent.com/64455378/229777461-da741945-9607-45f0-956e-467942bcf0ac.jpg">
           </span>
-          <span v-if="infoRes.gcount>0">{{ infoRes.gscore }}  ({{ infoRes.gcount }})</span>
-          <span v-else-if="infoRes.gcount==0"> 후기 미제공</span>
-          <span v-else> &nbsp;</span>
-        </div>  <!-- /평점 -->
+            <span id="gScore">
+        <span v-if="infoRes.gcount>0"> {{ infoRes.gscore }}점 ({{ infoRes.gcount }}건)</span>
+        <span v-else-if="infoRes.gcount==0"> 후기 미제공</span>
+        <span v-else> &nbsp;</span>
+            </span>
+          </div> <!--scores-->
+        </div> <!-- /scoresWindow-->
 
+      </div> <!--/infowindow-->
 
-      </div>   <!-- /infoWindow-->
-
-      <div id="search">
-        <button id="getMarkersBtn" @click="getMarkers()">근처 맛집 보기</button>
+      <div id="searchWindow"> <!--searchWindow-->
+        <div id="search">
         <form v-on:submit.prevent="search">
-          <input type="text" v-model="resName">
-          <input type="submit" value="검색">
+          <input id="searchInput" type="text" v-model="resName" placeholder="맛집 이름으로 검색">
+          <input id="searchButton" type="submit" value="검색">
         </form>
-      </div> <!--/search-->
+        </div>
+        <div id="btn">
+        <button id="getMarkersBtn" @click="getMarkers()">근처 맛집 보기</button>
+        </div>
+      </div> <!--/searchWindow-->
 
     </div>  <!-- controller -->
 
-    <div id="map"> </div>
+    <div id="map"></div>
 
   </div> <!-- main-->
 
@@ -58,9 +78,9 @@ export default {
   name: "Map",
   data() {
     return {
-      bookmarks : [],
-      bookmarked : false,
-      infoRes:Object,
+      bookmarks: [],
+      bookmarked: false,
+      infoRes: Object,
       l1: null,
       l2: null,
       l3: null,
@@ -86,14 +106,14 @@ export default {
     };
   },
 
-  watch:{
+  watch: {
     infoRes() {
-      this.show=true
-      if(this.bookmarks.includes(this.infoRes.id)){
+      this.show = true
+      if (this.bookmarks.includes(this.infoRes.id)) {
         console.log("여기 " + this.bookmarks)
         this.bookmarked = true;
-      }else{
-        this.bookmarked=false;
+      } else {
+        this.bookmarked = false;
       }
     }
   },
@@ -102,7 +122,7 @@ export default {
     const token = sessionStorage.getItem("token");
     axios.post("/matjib/bookmark/getbmid", token).then(({data}) => {
       this.bookmarks = data;
-      console.log("여기가 북마크/?"+ JSON.stringify(this.bookmarks))
+      console.log("여기가 북마크/?" + JSON.stringify(this.bookmarks))
     })
 
 
@@ -140,7 +160,7 @@ export default {
     async addBM() {
       const token = sessionStorage.getItem("token");
       const resId = this.infoRes.id;
-      console.log("추가해야할 것"+resId)
+      console.log("추가해야할 것" + resId)
       const res = await axios.post('/matjib/bookmark/add', {token, resId});
       if (res.status == 200) {
         alert("추가 되었습니다.")
@@ -303,7 +323,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
 #bookmark {
   width: 70px;
   float: right;
@@ -313,21 +332,96 @@ export default {
   border-radius: 5px;
 }
 
-#search {
-  display: flex;
-  position: relative;
-  z-index: 2;
-  padding-left: 10px;
-  width: 30%;
-  height: 100%;
-}
-
 .controller {
   display: flex;
   position: relative;
   width: 100%;
   height: 10vh;
   vertical-align: middle;
+}
+
+#infowindow {
+  padding-left: 20px;
+  height: 100%;
+  width: 84%;
+  display: flex;
+  background: white;
+}
+
+#nameAddWindow {
+  margin-top: 5px;
+  height: 100%;
+  width: 65%;
+  display: block;
+  position: relative;
+}
+
+#starNameWindow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#resTitle {
+  font-size: xx-large;
+  margin-left: 10px;
+  text-overflow: ellipsis; /*식당 이름이 길어지면 생략 기호(...)로 표시*/
+}
+
+#resAddress {
+  position : absolute;
+  bottom : 10%;
+  font-size: large;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: salmon;
+}
+
+#scoresWindow {
+  font-size: large;
+  height: 100%;
+  width: 49%;
+  position: relative;
+  display: block;
+}
+
+#scores {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+#searchWindow {
+  position: relative;
+  width: 16%;
+  height: 100%;
+  text-align: center;
+  background: white;
+}
+
+#search {
+  position: relative;
+  margin-top: 5px;
+  width: 100%;
+  height: 50%;
+}
+
+#searchInput {
+  width: 75%;
+}
+
+#searchButton {
+  width: 25%;
+}
+
+#getMarkersBtn {
+  width: 100%;
+  height: 50%;
 }
 
 #map {
@@ -340,11 +434,5 @@ export default {
 #main {
   position: relative;
   height: 100vh;
-}
-
-#infowindow {
-  padding-left: 20px;
-  height: 100%;
-  width: 70%;
 }
 </style>
