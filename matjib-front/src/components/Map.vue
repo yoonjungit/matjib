@@ -52,13 +52,13 @@
 
       <div id="searchWindow"> <!--searchWindow-->
         <div id="search">
-        <form v-on:submit.prevent="search">
-          <input id="searchInput" type="text" v-model="resName" placeholder="맛집 이름으로 검색">
-          <input id="searchButton" type="submit" value="검색">
-        </form>
+          <form v-on:submit.prevent="search">
+            <input id="searchInput" type="text" v-model="resName" placeholder="맛집 이름으로 검색">
+            <input id="searchButton" type="submit" value="검색">
+          </form>
         </div>
         <div id="btn">
-        <button id="getMarkersBtn" @click="getMarkers()">근처 맛집 보기</button>
+          <button id="getMarkersBtn" @click="getMarkers()">근처 맛집 보기</button>
         </div>
       </div> <!--/searchWindow-->
 
@@ -81,28 +81,13 @@ export default {
       bookmarks: [],
       bookmarked: false,
       infoRes: Object,
-      l1: null,
-      l2: null,
-      l3: null,
-      l4: null,
+      l1: null, l2: null,
+      l3: null, l4: null,
       markers: [],
       restaurantArray: [Object],
-      clusterer: null,
-      resName: "",
-      resAddress: "",
-      nScore: null,
-      kScore: null,
-      gScore: null,
-      nCount: null,
-      kCount: null,
-      gCount: null,
-      map: null,
       show: false,
-      infowindow: null,
-      customOverlay: null,
+      map: null,
       zoomControl: null,
-      geocoder: null,
-      content: '<div class="wrap"><div class="info"><div class="title">restaurant.resName<button id="bookmark">북마크</button></div><div class="body"><div class="address">주소</div><div class="naver"><img src="https://map.naver.com/v5/assets/icon/favicon-32x32.png" width="20px" height="20px"> 네이버 평점/갯수</div><div class="kakao"><img src="https://map.kakao.com/favicon.ico" width="20px" height="20px"> 카카오별점/갯수</div><div class="google"><img src="https://www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico" width="20px" height="20px"> 구글별점/갯수</div></div></div></div></div></div>' // 인포윈도우에 표시할 내용
     };
   },
 
@@ -110,7 +95,6 @@ export default {
     infoRes() {
       this.show = true
       if (this.bookmarks.includes(this.infoRes.id)) {
-        console.log("여기 " + this.bookmarks)
         this.bookmarked = true;
       } else {
         this.bookmarked = false;
@@ -122,7 +106,6 @@ export default {
     const token = sessionStorage.getItem("token");
     axios.post("/matjib/bookmark/getbmid", token).then(({data}) => {
       this.bookmarks = data;
-      console.log("여기가 북마크/?" + JSON.stringify(this.bookmarks))
     })
 
 
@@ -160,7 +143,6 @@ export default {
     async addBM() {
       const token = sessionStorage.getItem("token");
       const resId = this.infoRes.id;
-      console.log("추가해야할 것" + resId)
       const res = await axios.post('/matjib/bookmark/add', {token, resId});
       if (res.status == 200) {
         alert("추가 되었습니다.")
@@ -178,21 +160,18 @@ export default {
         center: new kakao.maps.LatLng(37.555184166, 126.936910322), // 지도의 중심좌표
         level: 1, //지도의 확대 레벨
       };
-      //지도 객체를 등록합니다.
-      //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
+      //지도 객체를 등록
       this.map = new kakao.maps.Map(container, options);
-      // 주소-좌표 변환 객체를 생성합니다
-      this.geocoder = new kakao.maps.services.Geocoder();
-      // 지도에 확대 축소 컨트롤을 생성한다.
+      // 지도에 확대 축소 컨트롤
       this.zoomControl = new kakao.maps.ZoomControl();
-      // 지도의 우측에 확대 축소 컨트롤을 추가한다.
+      // 우측에 확대 축소 컨트롤
       this.map.addControl(this.zoomControl, kakao.maps.ControlPosition.RIGHT);
 
-      // 지도가 이동, 확대, 축소로 인해 지도영역이 변경되면 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
+      // 지도가 이동, 확대, 축소로 인해 지도영역이 변경되면 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트 등록
       kakao.maps.event.addListener(this.map, 'bounds_changed', function () {
         var bounds = this.map.getBounds();
 
-        // 영역정보의 남서쪽 정보를 얻어옵니다
+        // 영역정보의 남서쪽 정보
         var swLatlng = bounds.getSouthWest();
         // 스트링 변환 후 남서쪽 위도, 경도 자르기
         var sw = swLatlng.toString().split(',');
@@ -203,7 +182,7 @@ export default {
         var swLongitude = swLng.slice(0, -1); // 최종 남서쪽 경도
         this.l3 = swLongitude
 
-        // 영역정보의 북동쪽 정보를 얻어옵니다
+        // 영역정보의 북동쪽 정보
         var neLatlng = bounds.getNorthEast();
         // 스트링 변환 후 북동쪽 위도, 경도 잘라내기
         var ne = neLatlng.toString().split(',');
@@ -221,13 +200,11 @@ export default {
       //검색결과 담을 반응형 배열 선언
       const state = reactive({
         restaurants: [],
-        show: false,
         marker: null
       });
 
       //서버에 음식점 리스트 요청
       axios.post("/matjib/restaurants/show", {
-        //변수명 : 변수
         latS: this.l1, //위도(min)
         latE: this.l2, //위도(max)
         longS: this.l3, //경도(min)
@@ -235,20 +212,8 @@ export default {
       })
           .then(({data}) => {
             state.restaurants = data; //결과 restaurant배열에 저장
-            console.log("검색 결과 : " + state.restaurants.length + "건");
-            console.log("검색 결과 : " + JSON.stringify(state.restaurants));
-
             state.restaurants.forEach((restaurant) => {
-              //마커 찍기
-              console.log("이거확인" + this.markers.length);
-              /*if (this.markers.length > 19) {
-                this.markers.forEach((marker) => marker.setMap(null));
-                this.markers = [];
-              }*/
               if (restaurant.latitude !== 0) {
-                //예외처리 : 만약 위도가 0이 아니라면
-                //이전 마커 지우는것만 추가해주세요!
-                console.log(restaurant.latitude, restaurant.longitude);
                 const coords = new kakao.maps.LatLng(
                     restaurant.latitude,
                     restaurant.longitude
@@ -263,47 +228,25 @@ export default {
                 this.markers.push(state.marker);
               }
 
-              kakao.maps.event.addListener(state.marker, 'click', function () {
+              kakao.maps.event.addListener(state.marker, 'click', function () { //마커 클릭 시 음식점 보이기 이벤트
                 this.infoRes = restaurant;
-                console.log(this.infoRes.resName)
               }.bind(this));
-              console.log(this.markers.length);
             });
           })
           .catch((error) => {
-            console.error(error); // 프로미스 자체에서 발생한 에러를 콘솔에 출력합니다.
+            console.error(error);
           });
       return {state};
-    },
-
-    async setInfoWindow(lat, lng) {
-      try {
-        /*console.log(lat + lng)*/
-        const {data} = await axios.post("/matjib/restaurants/getInfo", {
-          lat: lat,
-          lng: lng,
-        });
-        this.infoRes = data;
-        console.log("검색 결과 : " + this.infoRes.length + "건");
-        console.log("검색 결과 : " + JSON.stringify(this.infoRes));
-      } catch (error) {
-        console.error(error);
-      }
     },
 
     search() {
       const state = reactive({
         restaurants: [],
       });
-
-      console.log(this.resName);
       axios.post("/matjib/restaurants/search", {resName: this.resName}).then(({data}) => {
         state.restaurants = data;
-        console.log(state.restaurants.length);
-        console.log(JSON.stringify(state.restaurants))
         state.restaurants.forEach((restaurant) => {
           if (restaurant.latitude !== 0) {
-            console.log(restaurant.latitude, restaurant.longitude)
             const coords = new kakao.maps.LatLng(restaurant.latitude, restaurant.longitude);
             const marker = new kakao.maps.Marker({
               map: this.map,
@@ -311,7 +254,11 @@ export default {
             });
             marker.setMap(this.map);
             this.map.setCenter(coords);
+            kakao.maps.event.addListener(marker, 'click', function () { //마커 클릭 시 음식점 보이기 이벤트
+              this.infoRes = restaurant;
+            }.bind(this));
           }
+
           return {state}
         })
       })
@@ -321,17 +268,7 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-#bookmark {
-  width: 70px;
-  float: right;
-  margin-right: 10px;
-  border: none;
-  font-size: 17px;
-  border-radius: 5px;
-}
-
 .controller {
   display: flex;
   position: relative;
@@ -369,8 +306,8 @@ export default {
 }
 
 #resAddress {
-  position : absolute;
-  bottom : 10%;
+  position: absolute;
+  bottom: 10%;
   font-size: large;
   overflow: hidden;
   text-overflow: ellipsis;
