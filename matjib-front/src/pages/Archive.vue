@@ -7,6 +7,7 @@
     </div>
 
     <div class="mainView" style="">
+      <div v-if="state.bookmarks.length===0" style="padding: 30px">북마크 한 음식점이 없습니다.</div>
       <div>
         <div v-for="(bookmarks, idx) in state.bookmarks" :key="idx">
           <Bookmark :bookmarks="bookmarks"

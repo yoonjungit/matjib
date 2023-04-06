@@ -241,12 +241,11 @@ export default {
 
     search() {
       const state = reactive({
-        restaurants: [],
+        searchRestaurants: [],
       });
-
       axios.post("/matjib/restaurants/search", {resName: this.resName}).then(({data}) => {
-        state.restaurants = data;
-        state.restaurants.forEach((restaurant) => {
+        state.searchRestaurants = data;
+        state.searchRestaurants.forEach((restaurant) => {
           if (restaurant.latitude !== 0) {
             const coords = new kakao.maps.LatLng(restaurant.latitude, restaurant.longitude);
             const marker = new kakao.maps.Marker({
@@ -259,7 +258,6 @@ export default {
               this.infoRes = restaurant;
             }.bind(this));
           }
-
           return {state}
         })
       })

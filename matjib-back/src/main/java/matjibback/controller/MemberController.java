@@ -46,7 +46,6 @@ public class MemberController {
             memberRepository.save(newMember);
             member = newMember;
         }
-        member.setNNickname(response.getNickname());
 
         String nickname = member.getNickname();
         String loginToken = jwtService.getToken("id", member.getId());
@@ -81,11 +80,8 @@ public class MemberController {
         }
         Member member = result.get(true);
         String nickname = params.get("nickname");
-        if (nickname.equals("")) {
-            member.setNickname(member.getNNickname());
-        } else {
-            member.setNickname(nickname);
-        }
+        member.setNickname(nickname);
+
         memberRepository.save(member);
         return new ResponseEntity<>(nickname, HttpStatus.OK);
     }

@@ -26,8 +26,4 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private Levels level;
-
-    @Transient
-    private String nNickname;
-
 }

@@ -16,11 +16,7 @@
         </div>
         <div>{{ checkMessage }}</div>
         <br><br>
-        <span>혹은
-          <span style="font-weight: bold; color: #16CE91">네이버 별명</span>
-          을 가져올 수 있습니다.
-          <button @click="submitN()" style="background-color: #16CE91">네이버 별명 가져오기</button>
-        </span>
+
       </div>
     </div>
     <div class="delete">
@@ -85,16 +81,6 @@ export default {
       store.commit('setNickname', 0);
       sessionStorage.clear();
       router.push({path: '/'})
-    },
-
-    async submitN() {   //네이버 별명 가져오기(to-be)
-      this.inputNickname = '';
-      const res = await this.instance.put('/matjib/member/edit', {nickname: this.inputNickname});
-      if (res.status == 200) {
-        const { nickname } = res.data;
-        store.commit('setNickname', nickname);
-        alert(nickname + "로 변경성공")
-      }
     },
 
     async submitJ() {   //별명 변경
