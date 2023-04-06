@@ -1,7 +1,7 @@
 <template>
   <div class="startpage">
     <div class="background">
-      <div class="textarea">
+      <div id="textarea">
         <text color="white"><h1>찐찐Univ</h1></text>
         <div>
           <!-- 네이버 로그인 버튼 -->
@@ -44,9 +44,12 @@ export default {
   text-align: center;
   padding: 400px 700px;
   position: absolute;
+  vertical-align: middle;
 }
 
 .background {
+  text-align: center;
+  vertical-align: middle;
   position: relative;
   height: 100vh;
   overflow: hidden;
