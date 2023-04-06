@@ -54,9 +54,10 @@ public class BookmarkController {
     }
 
     //북마크 추가(지도API)
-    @PutMapping("/matjib/bookmark/add")
+    @PostMapping("/matjib/bookmark/add")
     public ResponseEntity addBookmark(@RequestBody Map<String, String> memInfo, HttpServletResponse res) {
         Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(memInfo.get("token"));
+        System.out.println(memInfo.get("token"));
         if (result.containsKey(false)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else if (result.get(true) == null) {
@@ -64,10 +65,13 @@ public class BookmarkController {
         }
         Member member = result.get(true);
         int resId = Integer.parseInt(String.valueOf(memInfo.get("resId")));
-
+        System.out.println(resId);
         Bookmark bookmark = new Bookmark();
+        System.out.println("어디가");
         bookmark.setMemId(member.getId());
+        System.out.println("문제야");
         bookmark.setResId(resId);
+        System.out.println("말해줘");
         bookmarkRepository.save(bookmark);
 
         return new ResponseEntity(resId, HttpStatus.OK);
@@ -90,5 +94,27 @@ public class BookmarkController {
         bookmarkRepository.deleteBookmarkByResIdAndMemId(resId, memId);
 
         return new ResponseEntity(resId, HttpStatus.OK);
+    }
+
+    @PostMapping("/matjib/bookmark/getbmid")
+    public ResponseEntity getId(@RequestBody String token, HttpServletResponse res) {
+        //1. 토큰 유효성 검사 후 멤버 객체 반환
+        Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
+        if (result.containsKey(false)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);   //토큰이 유효하지 않은 경우
+        } else if (result.get(true) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);      //토큰은 유효하나 멤버 객체가 없을 때
+        }
+        //2. 오류 없을 시 멤버 객체 가져오기
+        Member member = result.get(true);
+        int memId = member.getId();     //멤버id가져오기
+        //3. 북마크한 음식점 가져오기
+        //해당 멤버가 북마크 한 리스트(a) 가져오기
+        List<Bookmark> bookmarkList = bookmarkRepository.findBookmarkByMemId(memId);
+        //리스트(a)에서 음식점id만 모아서 리스트(b) 만들기
+        List<Integer> resIds = bookmarkList.stream().map(Bookmark::getResId).collect(Collectors.toList());
+
+        //4. 음식점 객체, 응답코드 보내기
+        return new ResponseEntity(resIds, HttpStatus.OK);
     }
 }

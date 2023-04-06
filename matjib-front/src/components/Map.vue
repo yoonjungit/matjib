@@ -2,28 +2,51 @@
   <div id="main">
     <div class="controller">
       <div id="infowindow">
-        <i @click="addBM()" class="fa fa-star" aria-hidden="true"></i>
+      <span v-if="show">
+        <i v-if="this.bookmarked" @click="deleteBM()" class="fa fa-star" aria-hidden="true"></i>
+        <i v-else @click="addBM" class="fa fa-star-o" aria-hidden="true"></i>
+          </span>
         <span style="font-size: 25px">{{ infoRes.resName }}</span>
-        <span>대현동 56-129번지</span>
-        <div>
-          <span><img src="https://map.naver.com/v5/assets/icon/favicon-32x32.png" width="20px" height="20px"> 네이버 평점/갯수</span>
-          <span><img src="https://map.kakao.com/favicon.ico" width="20px" height="20px"> 카카오별점/갯수</span>
-          <span><img src="https://www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico" width="20px"
-                     height="20px"> 구글별점/갯수</span>
-        </div>
-      </div>
+        <span>{{  infoRes.address }}</span>
+
+        <div>   <!-- 평점 -->
+          <span v-if="show">
+            <img src="https://user-images.githubusercontent.com/64455378/229777468-939349b7-cbcc-4e3c-a348-143629f0fe5a.jpg">
+          </span>
+          <span v-if="infoRes.ncount>0"> {{ infoRes.nscore }}  ({{ infoRes.ncount }})</span>
+          <span v-else-if="infoRes.ncount==0"> 후기 미제공</span>
+          <span v-else> &nbsp;</span>
+          <span v-if="show">&nbsp;
+            <img src="https://user-images.githubusercontent.com/64455378/229777466-f0dabb0e-e0c2-4dff-9587-8f1284c9ca21.jpg">
+          </span>
+          <span v-if="infoRes.kcount>0">{{ infoRes.kscore }}  ({{ infoRes.kcount }})</span>
+          <span v-else-if="infoRes.kcount==0"> 후기 미제공</span>
+          <span v-else> &nbsp;</span>
+
+          <span v-if="show">&nbsp;
+            <img src="https://user-images.githubusercontent.com/64455378/229777461-da741945-9607-45f0-956e-467942bcf0ac.jpg">
+          </span>
+          <span v-if="infoRes.gcount>0">{{ infoRes.gscore }}  ({{ infoRes.gcount }})</span>
+          <span v-else-if="infoRes.gcount==0"> 후기 미제공</span>
+          <span v-else> &nbsp;</span>
+        </div>  <!-- /평점 -->
+
+
+      </div>   <!-- /infoWindow-->
+
       <div id="search">
         <button id="getMarkersBtn" @click="getMarkers()">근처 맛집 보기</button>
         <form v-on:submit.prevent="search">
           <input type="text" v-model="resName">
           <input type="submit" value="검색">
         </form>
-        <!--      <p id="latlon"></p> &lt;!&ndash;남서쪽/북동쪽 위도, 경도 표시 하려고 임시로 만듬&ndash;&gt;-->
-      </div>
-    </div>
-    <div id="map">
-    </div>
-  </div>
+      </div> <!--/search-->
+
+    </div>  <!-- controller -->
+
+    <div id="map"> </div>
+
+  </div> <!-- main-->
 
 </template>
 
@@ -35,6 +58,8 @@ export default {
   name: "Map",
   data() {
     return {
+      bookmarks : [],
+      bookmarked : false,
       infoRes:Object,
       l1: null,
       l2: null,
@@ -60,7 +85,27 @@ export default {
       content: '<div class="wrap"><div class="info"><div class="title">restaurant.resName<button id="bookmark">북마크</button></div><div class="body"><div class="address">주소</div><div class="naver"><img src="https://map.naver.com/v5/assets/icon/favicon-32x32.png" width="20px" height="20px"> 네이버 평점/갯수</div><div class="kakao"><img src="https://map.kakao.com/favicon.ico" width="20px" height="20px"> 카카오별점/갯수</div><div class="google"><img src="https://www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico" width="20px" height="20px"> 구글별점/갯수</div></div></div></div></div></div>' // 인포윈도우에 표시할 내용
     };
   },
+
+  watch:{
+    infoRes() {
+      this.show=true
+      if(this.bookmarks.includes(this.infoRes.id)){
+        console.log("여기 " + this.bookmarks)
+        this.bookmarked = true;
+      }else{
+        this.bookmarked=false;
+      }
+    }
+  },
+
   mounted() {
+    const token = sessionStorage.getItem("token");
+    axios.post("/matjib/bookmark/getbmid", token).then(({data}) => {
+      this.bookmarks = data;
+      console.log("여기가 북마크/?"+ JSON.stringify(this.bookmarks))
+    })
+
+
     if (window.kakao && window.kakao.maps) {
       this.initMap();
     } else {
@@ -74,6 +119,39 @@ export default {
     }
   },
   methods: {
+
+    async deleteBM() {
+      const token = sessionStorage.getItem("token");
+      const resId = this.infoRes.id;
+      let answer = confirm("북마크를 삭제하시겠습니까?")
+      if (answer == true) {
+        const res = await axios.post('/matjib/bookmark/delete', {token, resId});
+        if (res.status == 200) {
+          alert("삭제 되었습니다.")
+          this.bookmarked = false;
+          let indexBM = this.bookmarks.indexOf(resId);
+          this.bookmarks.splice(indexBM, 1);
+        } else {
+          alert("처리되지 않았습니다.")
+        }
+      }
+    },
+
+    async addBM() {
+      const token = sessionStorage.getItem("token");
+      const resId = this.infoRes.id;
+      console.log("추가해야할 것"+resId)
+      const res = await axios.post('/matjib/bookmark/add', {token, resId});
+      if (res.status == 200) {
+        alert("추가 되었습니다.")
+        this.bookmarked = true;
+        this.bookmarks.push(resId);
+      } else {
+        alert("처리되지 않았습니다.")
+      }
+    },
+
+
     initMap() {
       const container = document.getElementById("map");
       const options = {
@@ -116,10 +194,6 @@ export default {
         var neLongitude = neLng.slice(0, -1); // 최종 북동쪽 경도
         this.l4 = neLongitude
 
-        // 가져온 위도, 경도 정보 표시 (나중에 지울 것)
-        /*var message = '<p>남서쪽<br>' + this.l1 + '<br>' + this.l3 + '<br>북동쪽<br>' + this.l2 + '<br>' + this.l4 + '</p>';
-        var resultDiv = document.getElementById('latlon');
-        resultDiv.innerHTML = message;*/
       }.bind(this));
     },
 
@@ -167,20 +241,12 @@ export default {
                 state.marker.setMap(this.map);
                 this.restaurantArray.push(restaurant);
                 this.markers.push(state.marker);
-                  /*var lat = marker.getPosition().getLat()
-                  var lng = marker.getPosition().getLng()
-                  console.log(lat);
-                  console.log(lng);*/
-
-                  /*const lat = restaurant.latitude
-                  const lng = restaurant.longitude*/
-                  /*console.log("이거" + lat);*/
               }
-            // 마커에 클릭 이벤트를 등록한다 (우클릭 : rightclick)
-            kakao.maps.event.addListener(state.marker, 'click', function () {
-              const name = restaurant.resName;
-              this.showInfoWindow(name);
-            }.bind(this));
+
+              kakao.maps.event.addListener(state.marker, 'click', function () {
+                this.infoRes = restaurant;
+                console.log(this.infoRes.resName)
+              }.bind(this));
               console.log(this.markers.length);
             });
           })
@@ -188,10 +254,6 @@ export default {
             console.error(error); // 프로미스 자체에서 발생한 에러를 콘솔에 출력합니다.
           });
       return {state};
-    },
-
-    showInfoWindow(name) {
-      console.log("자자자자자자자" + name);
     },
 
     async setInfoWindow(lat, lng) {
