@@ -59,7 +59,7 @@ export default {
 
     //네이버 로그인 실패 시 -> 로그인 실패 알림 및 다시 로그인 화면("/")으로 가기
     if (tempToken.includes("access")) {
-      alert("로그인에 실패하였습니다.")
+      alert("네이버 로그인에 실패하였습니다.")
       router.push({path: "/"})
       // state 값이 다를 시(사이트 위변조 방지- CSRF)
     } else if (callbackState != store.state.loginState) {

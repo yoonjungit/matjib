@@ -12,7 +12,7 @@
                  @keypress="preventSpace"
                  style="font-size: medium" minlength="3" maxlength="10">
           <span> {{ lengthCheckMessage }} </span>
-          <button @click="submitJ()"> 변경하기</button>
+          <button @click="editNickname()"> 변경하기</button>
         </div>
         <div>{{ checkMessage }}</div>
         <br><br>
@@ -23,7 +23,7 @@
       <div style="font-size: larger; font-weight: bold">회원탈퇴</div>
       <hr>
       <span>탈퇴하시면 모든 정보가 즉시 삭제됩니다.<br>탈퇴하시겠습니까?  </span>
-      <button @click="deleteN()"> 탈퇴하기</button>
+      <button @click="deleteMember()"> 탈퇴하기</button>
       <br><br>
       <div>네이버 로그인 연동은 네이버 사이트에서 직접 해제하셔야 합니다.
         <a href="https://nid.naver.com/internalToken/view/tokenList/pc/ko">
@@ -67,7 +67,7 @@ export default {
       }
     },
 
-    async submitJ() {   //별명 변경
+    async editNickname() {   //별명 변경
       if (this.inputNickname.length < 3) {
         alert("최소 3자 이상 입력해주세요")
       } else {
@@ -81,16 +81,18 @@ export default {
       }
     },
 
-    async deleteN() {    //회원탈퇴
+    async deleteMember() {    //회원탈퇴
       let answer = confirm("정말로 탈퇴하시겠습니까?");
-      if (answer == true) {
-        if (res.status == 200) {
+      if (answer === true) {
         const res = await api.delete('/matjib/member/delete');
+        if (res.status === 200) {
           alert("탈퇴완료")
-        } else {
-          alert("탈퇴에 실패했습니다.");
           this.$logout()
+        } else if(res.status === 401 || res.status ===404) {
+          alert("오류가 발생했습니다.")
           this.$logout()
+        }else {
+          alert("오류가 발생했습니다.");
         }
       }
     }
