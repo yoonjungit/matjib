@@ -1,6 +1,5 @@
 package matjibback.controller;
 
-import matjibback.entity.Levels;
 import matjibback.entity.Member;
 import matjibback.naverLogin.NaverLoginService;
 import matjibback.naverLogin.NaverUserInfo;
@@ -30,7 +29,6 @@ public class MemberController {
     MemberService memberService;
 
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("matjib/member/login")
     public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res) {
         NaverUserInfo response = naverLoginService.getUserNaverProfile(params.get("tempToken"), params.get("callbackState"));
@@ -56,7 +54,6 @@ public class MemberController {
         return new ResponseEntity<>(nickname, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/matjib/member/logout")
     public ResponseEntity logout(HttpServletResponse res) {
         Cookie cookie = new Cookie("token", null);
@@ -67,7 +64,6 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/matjib/member/edit")
     public ResponseEntity edit(@RequestParam("token") String token,
                                @RequestBody Map<String, String> params) {
@@ -85,7 +81,6 @@ public class MemberController {
         return new ResponseEntity<>(nickname, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @Transactional
     @DeleteMapping("/matjib/member/delete")
     public ResponseEntity delete(@RequestParam("token") String token) {
