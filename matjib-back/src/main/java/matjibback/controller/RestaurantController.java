@@ -22,19 +22,18 @@ public class RestaurantController {
     }
 
     //검색어로 맛집 찾기
-    @PostMapping("/matjib/restaurants/search")
-    public List<Restaurant> findMap(@RequestBody Map<String, String> params) {
-        List<Restaurant> restaurants = restaurantRepository.findRestaurantByResNameContaining(params.get("resName"));
+    @GetMapping("/matjib/restaurants/search")
+    public List<Restaurant> findMap(@RequestParam ("keyword") String keyword) {
+        List<Restaurant> restaurants = restaurantRepository.findRestaurantByResNameContaining(keyword);
         return restaurants;
     }
 
     //현재 지도 중심위치 근방 맛집 보여주기
-    @PostMapping("/matjib/restaurants/show")
-    public List<Restaurant> showMap(@RequestBody Map<String, String> params) {
-        float latS= Float.parseFloat(String.valueOf(params.get("latS")));
-        float latE= Float.parseFloat(String.valueOf(params.get("latE")));
-        float longS= Float.parseFloat(String.valueOf(params.get("longS")));
-        float longE= Float.parseFloat(String.valueOf(params.get("longE")));
+    @GetMapping("/matjib/restaurants")
+    public List<Restaurant> showMap(
+            @RequestParam ("latS") float latS, @RequestParam ("latE") float latE,
+            @RequestParam ("longS") float longS, @RequestParam ("longE") float longE) {
+        System.out.println(latS + "" + longE);
         List<Restaurant> restaurants = restaurantRepository.findRestaurantByLatitudeBetweenAndLongitudeBetweenOrderByAvgScoreDesc(latS, latE, longS, longE);
         System.out.println("검색결과 : "+ restaurants.size() +"건");
         if(restaurants.size()>20){

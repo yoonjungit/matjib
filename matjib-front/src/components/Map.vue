@@ -198,11 +198,13 @@ export default {
       });
 
       //서버에 음식점 리스트 요청
-      axios.post("/matjib/restaurants/show", {
-        latS: this.l1, //위도(min)
-        latE: this.l2, //위도(max)
-        longS: this.l3, //경도(min)
-        longE: this.l4, //경도(max)
+      api.get("/matjib/restaurants", {
+        params: {
+          latS: this.l1, //위도(min)
+          latE: this.l2, //위도(max)
+          longS: this.l3, //경도(min)
+          longE: this.l4, //경도(max)
+        }
       })
           .then(({data}) => {
             state.restaurants = data; //결과 restaurant배열에 저장
@@ -233,11 +235,14 @@ export default {
       return {state};
     },
 
-    search() {
+    search(searchName) {
       const state = reactive({
         searchRestaurants: [],
       });
-      axios.post("/matjib/restaurants/search", {resName: this.resName}).then(({data}) => {
+      if(searchName==""){
+        return alert("검색어를 입력해주세요")
+      }
+      api.get(`/matjib/restaurants/search`,{params: {keyword : searchName}}).then(({data}) => {
         state.searchRestaurants = data;
         state.searchRestaurants.forEach((restaurant) => {
           if (restaurant.latitude !== 0) {
