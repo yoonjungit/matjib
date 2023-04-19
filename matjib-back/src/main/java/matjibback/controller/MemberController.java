@@ -3,6 +3,7 @@ package matjibback.controller;
 import matjibback.entity.Member;
 import matjibback.naverLogin.NaverLoginService;
 import matjibback.naverLogin.NaverUserInfo;
+import matjibback.repository.BookmarkRepository;
 import matjibback.repository.MemberRepository;
 import matjibback.service.JwtService;
 import matjibback.service.MemberService;
@@ -28,6 +29,8 @@ public class MemberController {
     @Autowired
     MemberService memberService;
 
+    @Autowired
+    BookmarkRepository bookmarkRepository;
 
     @PostMapping("matjib/member/login")
     public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res) {
@@ -94,6 +97,7 @@ public class MemberController {
         }
         Member member = result.get(true);
         memberRepository.deleteMemberById(member.getId());
+        bookmarkRepository.deleteBookmarkByMemId(member.getId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
