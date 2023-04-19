@@ -22,7 +22,7 @@ export default {
 
 <style>
 #app {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
   font-weight: 500;
   position: sticky;
   height: 100vh;
