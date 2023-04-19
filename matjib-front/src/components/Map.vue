@@ -6,8 +6,8 @@
         <div id="nameAddWindow"> <!--nameAddWindow-->
           <span id="starNameWindow"> <!--starNameWindow-->
           <span v-if="show"> <!--별 아이콘-->
-            <i v-if="this.bookmarked" @click="deleteBM()" class="fa fa-star" aria-hidden="true"></i>
-            <i v-else @click="addBM" class="fa fa-star-o" aria-hidden="true"></i>
+            <i v-if="this.bookmarked" @click="deleteBookmark(this.infoRes.id)" class="fa fa-star"
+            <i v-else @click="addBookmark(this.infoRes.id)" class="fa fa-star-o" aria-hidden="true"></i>
           </span> <!--별 아이콘-->
           <span id="resTitle">{{ infoRes.resName }}</span> <!-- 음식점 이름 -->
             </span> <!--/starNameWindow-->
@@ -72,7 +72,7 @@
 
 <script>
 import {reactive} from "vue";
-import axios from "axios";
+import api from "@/main";
 
 export default {
   name: "Map",
@@ -103,8 +103,7 @@ export default {
   },
 
   mounted() {
-    const token = sessionStorage.getItem("token");
-    axios.post("/matjib/bookmark/getbmid", token).then(({data}) => {
+    api.get("/matjib/bookmark/id").then(({data}) => {
       this.bookmarks = data;
     })
 
@@ -122,13 +121,10 @@ export default {
     }
   },
   methods: {
-
-    async deleteBM() {
-      const token = sessionStorage.getItem("token");
-      const resId = this.infoRes.id;
+    async deleteBookmark(resId) {
       let answer = confirm("북마크를 삭제하시겠습니까?")
       if (answer == true) {
-        const res = await axios.post('/matjib/bookmark/delete', {token, resId});
+        const res = await api.delete(`/matjib/bookmark/delete/${resId}`);
         if (res.status == 200) {
           alert("삭제 되었습니다.")
           this.bookmarked = false;
@@ -140,10 +136,8 @@ export default {
       }
     },
 
-    async addBM() {
-      const token = sessionStorage.getItem("token");
-      const resId = this.infoRes.id;
-      const res = await axios.post('/matjib/bookmark/add', {token, resId});
+    async addBookmark(resId) {
+      const res = await api.put(`/matjib/bookmark/add/${resId}`);
       if (res.status == 200) {
         alert("추가 되었습니다.")
         this.bookmarked = true;

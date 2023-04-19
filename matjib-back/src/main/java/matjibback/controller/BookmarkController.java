@@ -28,9 +28,9 @@ public class BookmarkController {
     @Autowired
     RestaurantRepository restaurantRepository;
 
-    //북마크 리스트 가져오기(Archive)
-    @PostMapping("/matjib/bookmark/get")
-    public ResponseEntity getBookmark(@RequestBody String token, HttpServletResponse res) {
+    //북마크 리스트 가져오기(객체 반환)
+    @GetMapping("/matjib/bookmark")
+    public ResponseEntity getBookmark(@CookieValue(value = "token", required = false)String token) {
         //1. 토큰 유효성 검사 후 멤버 객체 반환
         Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
         if (result.containsKey(false)) {
@@ -52,48 +52,9 @@ public class BookmarkController {
         //4. 음식점 객체, 응답코드 보내기
         return new ResponseEntity(restaurants, HttpStatus.OK);
     }
-
-    //북마크 추가(지도API)
-    @PostMapping("/matjib/bookmark/add")
-    public ResponseEntity addBookmark(@RequestBody Map<String, String> memInfo, HttpServletResponse res) {
-        Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(memInfo.get("token"));
-        System.out.println(memInfo.get("token"));
-        if (result.containsKey(false)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        } else if (result.get(true) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        Member member = result.get(true);
-        int resId = Integer.parseInt(String.valueOf(memInfo.get("resId")));
-        Bookmark bookmark = new Bookmark();
-        bookmark.setMemId(member.getId());
-        bookmark.setResId(resId);
-        bookmarkRepository.save(bookmark);
-
-        return new ResponseEntity(resId, HttpStatus.OK);
-    }
-
-    //북마크 삭제(Archive, 지도API)
-    @Transactional
-    @PostMapping("/matjib/bookmark/delete")
-    public ResponseEntity deleteBookmark(@RequestBody Map<String, String> memInfo, HttpServletResponse res) {
-        Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(memInfo.get("token"));
-        if (result.containsKey(false)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        } else if (result.get(true) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        Member member = result.get(true);
-        int resId = Integer.parseInt(String.valueOf(memInfo.get("resId")));
-        int memId = member.getId();
-
-        bookmarkRepository.deleteBookmarkByResIdAndMemId(resId, memId);
-
-        return new ResponseEntity(resId, HttpStatus.OK);
-    }
-
-    @PostMapping("/matjib/bookmark/getbmid")
-    public ResponseEntity getId(@RequestBody String token, HttpServletResponse res) {
+    //북마크 리스트 조회(id 반환)
+    @GetMapping("/matjib/bookmark/id")
+    public ResponseEntity getId(@CookieValue(value = "token", required = false)String token) {
         //1. 토큰 유효성 검사 후 멤버 객체 반환
         Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
         if (result.containsKey(false)) {
@@ -113,4 +74,43 @@ public class BookmarkController {
         //4. 음식점 객체, 응답코드 보내기
         return new ResponseEntity(resIds, HttpStatus.OK);
     }
+
+    //북마크 추가(지도API)
+    @PutMapping("/matjib/bookmark/add/{resId}")
+    public ResponseEntity addBookmark(@PathVariable("resId") int resId,
+                                      @CookieValue(value = "token", required = false)String token) {
+        Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
+        if (result.containsKey(false)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } else if (result.get(true) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Member member = result.get(true);
+        Bookmark bookmark = new Bookmark();
+        bookmark.setMemId(member.getId());
+        bookmark.setResId(resId);
+        bookmarkRepository.save(bookmark);
+
+        return new ResponseEntity(resId, HttpStatus.OK);
+    }
+
+    //북마크 삭제(Archive, 지도API)
+    @Transactional
+    @DeleteMapping("/matjib/bookmark/delete/{resId}")
+    public ResponseEntity deleteBookmark(@PathVariable("resId") int resId,
+                                         @CookieValue(value = "token", required = false)String token){
+        Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
+        if (result.containsKey(false)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } else if (result.get(true) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Member member = result.get(true);
+        int memId = member.getId();
+        bookmarkRepository.deleteBookmarkByResIdAndMemId(resId, memId);
+
+        return new ResponseEntity(resId, HttpStatus.OK);
+    }
+
+
 }

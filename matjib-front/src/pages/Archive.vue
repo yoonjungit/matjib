@@ -45,8 +45,7 @@ export default {
     const state = reactive({
       bookmarks: [],
     })
-    const token = sessionStorage.getItem("token");
-    axios.post("/matjib/bookmark/get", token).then(({data}) => {
+    axios.get("/matjib/bookmark").then(({data}) => {
       state.bookmarks = data;
     })
     return {state}

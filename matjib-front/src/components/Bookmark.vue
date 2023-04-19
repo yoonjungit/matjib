@@ -1,7 +1,7 @@
 <template>
   <div v-if="show" id="box">
     <div>
-      <i @click="deleteBM()" class="fa fa-star" aria-hidden="true"></i>
+      <i @click="deleteBookmark(bookmarks.id)" class="fa fa-star" aria-hidden="true"></i>
     </div>
     <div>
       <span @click="showOnMap">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/main";
 
 export default {
   name: 'Bookmark',
@@ -54,12 +54,10 @@ export default {
   },
 
   methods: {
-    async deleteBM() {
-      const token = sessionStorage.getItem("token");
-      const resId = this.bookmarks.id;
+    async deleteBookmark(resId) {
       let answer = confirm("북마크를 삭제하시겠습니까?")
       if (answer == true) {
-        const res = await axios.post('/matjib/bookmark/delete', {token, resId});
+        const res = await api.delete(`/matjib/bookmark/delete/${resId}`);
         if (res.status == 200) {
           alert("삭제 되었습니다.")
           this.show = false
