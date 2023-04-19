@@ -23,7 +23,4 @@ public class Member {
 
     @Column(nullable = false)
     private String email;
-
-    @Enumerated(EnumType.STRING)
-    private Levels level;
 }

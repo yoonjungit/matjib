@@ -1,6 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import Archive from "@/pages/Archive.vue";
-import List from "@/pages/List.vue";
 import Search from "@/pages/Search.vue";
 import MyPage from "@/pages/MyPage.vue";
 import Login from "@/pages/Login.vue"
@@ -9,7 +8,6 @@ import store from "@/store/store";
 
 const routes = [
     {path: '/archive', component: Archive, meta: {requiresAuth: true}},
-    {path: '/list', component: List, meta: {requiresAuth: true}},
     {path: '/search', component: Search, meta: {requiresAuth: true}},
     {path: '/mypage', component: MyPage, meta: {requiresAuth: true}},
     {path: '/', component: Login, meta: {public: true}},

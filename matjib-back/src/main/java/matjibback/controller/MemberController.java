@@ -42,7 +42,6 @@ public class MemberController {
             newMember.setToken(nToken);
             newMember.setNickname(response.getNickname());
             newMember.setEmail(response.getEmail());
-            newMember.setLevel(Levels.Ba);
             memberRepository.save(newMember);
             member = newMember;
         }
