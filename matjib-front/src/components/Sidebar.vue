@@ -6,14 +6,14 @@
       </router-link>
       <br>
       <div class="profile">
-        <i class="fa fa-graduation-cap" aria-hidden="true"></i>
+        <i class="fa fa-smile-o" aria-hidden="true"></i>
         <router-link to="/mypage" style="text-align: left;">
           <div style="margin-left: 10px;" v-if="$store.state.account.nickname">
             {{ $store.state.account.nickname }}
           </div>
         </router-link>
         <div style="margin-left: 10px;" v-if="!$store.state.account.nickname">로그인 후 사용해주세요.</div>
-        <a to="/" v-else @click="logout()" style="display: flex; align-items: center; margin-left: auto;">
+        <a to="/" class="logout" v-else @click="logout()">
           <div style="margin-right: 5px;">
             <i class="fa fa-sign-out" aria-hidden="true" style="float: right"></i>
           </div>
@@ -90,6 +90,13 @@ export default {
   margin-top: 10px;
   margin-left: 10px;
   color: white;
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  cursor: pointer;
 }
 
 a {

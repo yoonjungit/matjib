@@ -39,14 +39,14 @@ export default {
 </script>
 
 <style scoped>
-.textarea {
-  color: white;
+#textarea {
   text-align: center;
-  padding: 400px 700px;
+  width: 100%;
+  color: white;
+  padding-top: 100px;
   position: absolute;
   vertical-align: middle;
 }
-
 .background {
   text-align: center;
   vertical-align: middle;

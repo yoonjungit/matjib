@@ -7,6 +7,7 @@
           <span id="starNameWindow"> <!--starNameWindow-->
           <span v-if="show"> <!--별 아이콘-->
             <i v-if="this.bookmarked" @click="deleteBookmark(this.infoRes.id)" class="fa fa-star"
+               aria-hidden="true" style="color: #E74C3C"></i>
             <i v-else @click="addBookmark(this.infoRes.id)" class="fa fa-star-o" aria-hidden="true"></i>
           </span> <!--별 아이콘-->
           <span id="resTitle">{{ infoRes.resName }}</span> <!-- 음식점 이름 -->
@@ -52,13 +53,12 @@
 
       <div id="searchWindow"> <!--searchWindow-->
         <div id="search">
-          <form v-on:submit.prevent="search">
-            <input id="searchInput" type="text" v-model="resName" placeholder="맛집 이름으로 검색">
-            <input id="searchButton" type="submit" value="검색">
-          </form>
+          <input id="searchInput" type="text" v-model="searchName" placeholder="맛집 이름으로 검색" @keyup.enter="search(searchName)">
+          <button id="searchButton" type="submit" value="검색" @click="search(searchName)">
+            <i class="fa fa-search" aria-hidden="true"></i></button>
         </div>
         <div id="btn">
-          <button id="getMarkersBtn" @click="getMarkers()">근처 맛집 보기</button>
+          <button id="getMarkersBtn" @click="getMarkers()">이 동네 맛집 보기</button>
         </div>
       </div> <!--/searchWindow-->
 
@@ -78,6 +78,7 @@ export default {
   name: "Map",
   data() {
     return {
+      searchName: '',
       bookmarks: [],
       bookmarked: false,
       infoRes: Object,
@@ -260,9 +261,8 @@ export default {
           return {state}
         })
       })
-    }
-    ,
-  },
+    },
+  }
 }
 </script>
 
@@ -278,7 +278,7 @@ export default {
 #infowindow {
   padding-left: 20px;
   height: 100%;
-  width: 84%;
+  width: 80%;
   display: flex;
   background: white;
 }
@@ -292,6 +292,7 @@ export default {
 }
 
 #starNameWindow {
+  font-size:large;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -333,7 +334,8 @@ export default {
 
 #searchWindow {
   position: relative;
-  width: 16%;
+  padding-right: 20px;
+  width: 20%;
   height: 100%;
   text-align: center;
   background: white;
@@ -347,16 +349,25 @@ export default {
 }
 
 #searchInput {
+  border-radius: 4px;
   width: 75%;
 }
 
 #searchButton {
   width: 25%;
+  border: none;
+  border-radius: 4px;
+  background-color: #E74C3C;
+  color: white;
 }
 
 #getMarkersBtn {
   width: 100%;
   height: 50%;
+  background-color: #E74C3C;
+  color: white;
+  border: none;
+  border-radius: 4px;
 }
 
 #map {
