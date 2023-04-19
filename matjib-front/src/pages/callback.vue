@@ -29,11 +29,11 @@
 
 
 <script>
-import axios from "axios";
 import router from "@/router";
 import store from "@/store/store";
 import VueJwtDecode from 'vue-jwt-decode'
 import VueCookies from "vue-cookies";
+import api from "@/main";
 
 export default {
   name: "Callback.vue",
@@ -46,10 +46,10 @@ export default {
 
     const submit = async () => {
       try {
-        const res = await axios.post('/matjib/member/login', {tempToken, callbackState})
         const nickname = res.data;
         const token = VueCookies.get('token')
         const expTime = VueJwtDecode.decode(token).exp;
+        const result = await api.post('/matjib/member/login', {tempToken, callbackState})
 
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('expTime', expTime);

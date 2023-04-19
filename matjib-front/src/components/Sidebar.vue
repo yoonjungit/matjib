@@ -57,9 +57,6 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import store from "@/store/store";
-import router from "@/router";
 
 export default {
   name: 'Sidebar',
@@ -67,20 +64,11 @@ export default {
     msg: String
   },
 
-  setup() {
-    const logout = async () => {
-      await axios.post("/matjib/member/logout").then(() => {
-        store.commit('setNickname', 0);
-        sessionStorage.clear();
-        router.push({path: "/"});
-      })
-          .catch(() => {
-            store.commit('setNickname', 0);
-            sessionStorage.clear();
-            router.push({path: "/"});
-          })
+  methods: {
+    logout() {
+      // 로그아웃 메소드 실행
+      this.$logout();
     }
-    return {logout}
   }
 }
 </script>

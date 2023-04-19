@@ -3,9 +3,25 @@ import App from './App.vue'
 import router from "@/router/index";
 import store from "@/store/store";
 import VueCookies from "vue-cookies";
+import axios from "axios";
 
-createApp(App)
-    .use(router)
+const api = axios.create({
+    baseURL: process.env.VUE_APP_BASE_URL,
+    withCredentials: true,
+});
+export default api;
+
+const app = createApp(App);
+
+app.config.globalProperties.$logout = async function () {
+    await api.get("/matjib/member/logout").finally(() => {
+        store.commit('setNickname', 0);
+        sessionStorage.clear();
+        router.push('/')
+    })
+}
+
+app.use(router)
     .use(store)
     .use(VueCookies)
     .mount('#app')

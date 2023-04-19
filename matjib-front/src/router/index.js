@@ -25,11 +25,8 @@ router.beforeEach((to, from, next) => {
     const token = sessionStorage.getItem('token');
     const tokenExpireTime = sessionStorage.getItem('expTime');
 
-    const logout = () => {
         store.commit('setNickname', 0);
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('expTime');
-        next('/');
+        this.$logout();
     }
 
     if(!token){
@@ -48,8 +45,8 @@ router.beforeEach((to, from, next) => {
         if (now > expireTime) {
             // 토큰이 만료되었으면 로그인 페이지로 이동
             alert("다시 로그인 해주세요.");
-            logout();
         }
+        this.$logout()
     }
     next();
 });

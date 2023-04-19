@@ -36,9 +36,8 @@
 <script>
 
 
-import axios from "axios";
+import api from "@/main";
 import store from "@/store/store";
-import router from "@/router";
 
 export default {
   name: 'MyPage',
@@ -49,16 +48,7 @@ export default {
     let inputNickname = '';
     let checkMessage = '';
 
-    //axios 객체 생성
-    const token = sessionStorage.getItem("token");
-    const instance = axios.create({
-      baseURL: process.env.VUE_APP_BASE_URL,
-      params:{
-        "token": token,
-      }
-    })
-
-    return {inputNickname, lengthCheckMessage, checkMessage, instance};
+    return {inputNickname, lengthCheckMessage, checkMessage};
   },
 
   methods: {
@@ -77,17 +67,11 @@ export default {
       }
     },
 
-    logout() {    //로그아웃
-      store.commit('setNickname', 0);
-      sessionStorage.clear();
-      router.push({path: '/'})
-    },
-
     async submitJ() {   //별명 변경
       if (this.inputNickname.length < 3) {
         alert("최소 3자 이상 입력해주세요")
       } else {
-        const res = await this.instance.put('/matjib/member/edit', {nickname: this.inputNickname});
+        const res = await api.put('/matjib/member/edit', {nickname: this.inputNickname});
         if (res.status == 200) {
           store.commit('setNickname', res.data);
           alert(res.data + "로 변경성공")
@@ -100,12 +84,13 @@ export default {
     async deleteN() {    //회원탈퇴
       let answer = confirm("정말로 탈퇴하시겠습니까?");
       if (answer == true) {
-        const res = await this.instance.delete('/matjib/member/delete');
         if (res.status == 200) {
+        const res = await api.delete('/matjib/member/delete');
           alert("탈퇴완료")
-          this.logout();
         } else {
           alert("탈퇴에 실패했습니다.");
+          this.$logout()
+          this.$logout()
         }
       }
     }
