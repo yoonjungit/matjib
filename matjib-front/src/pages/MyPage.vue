@@ -4,7 +4,7 @@
       <div style="font-size: larger; font-weight: bold">회원정보 변경(닉네임 설정)</div>
       <hr>
       <div>이메일은 변경 불가합니다.<br><br>
-        찐찐Univ에서 변경한 닉네임은 네이버 닉네임과 연동되지 않습니다.<br><br></div>
+        찐맛집에서 변경한 닉네임은 네이버 닉네임과 연동되지 않습니다.<br><br></div>
       <div>
         <div style="font-weight: bold">닉네임</div>
         <div class="nickname">

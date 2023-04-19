@@ -2,7 +2,7 @@
   <div class="startpage">
     <div class="background">
       <div id="textarea">
-        <text color="white"><h1>찐찐Univ</h1></text>
+        <div class="title" color="white"><h1>찐맛집</h1></div>
         <div>
           <!-- 네이버 로그인 버튼 -->
           <img

@@ -2,7 +2,7 @@
   <div class="d-flex flex-column flex-shrink-0 p-3" style=" height: 100vh">
     <div class="sidebar">
       <router-link to="/search" style="font-size:30px; font-weight : bold; text-align: center">
-        찐찐Univ&nbsp;<i class="fa fa-cutlery" aria-hidden="true"></i>
+        찐맛집&nbsp;<i class="fa fa-cutlery" aria-hidden="true"></i>
       </router-link>
       <br>
       <div class="profile">
