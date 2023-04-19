@@ -49,6 +49,7 @@ public class MemberController {
 
         Cookie cookie = new Cookie("token", loginToken);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
 
         res.addCookie(cookie);
         return new ResponseEntity<>(nickname, HttpStatus.OK);
@@ -58,6 +59,7 @@ public class MemberController {
     public ResponseEntity logout(HttpServletResponse res) {
         Cookie cookie = new Cookie("token", null);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
         cookie.setMaxAge(0);
 
         res.addCookie(cookie);
@@ -65,7 +67,7 @@ public class MemberController {
     }
 
     @PutMapping("/matjib/member/edit")
-    public ResponseEntity edit(@RequestParam("token") String token,
+    public ResponseEntity edit(@CookieValue(value = "token", required = false)String token,
                                @RequestBody Map<String, String> params) {
         Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
         if (result.containsKey(false)) {
@@ -83,7 +85,7 @@ public class MemberController {
 
     @Transactional
     @DeleteMapping("/matjib/member/delete")
-    public ResponseEntity delete(@RequestParam("token") String token) {
+    public ResponseEntity delete(@CookieValue(value = "token", required = false)String token) {
         Map<Boolean, Member> result = memberService.validateTokenAndGetMemberById(token);
         if (result.containsKey(false)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

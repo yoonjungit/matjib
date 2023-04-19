@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from "@/router/index";
 import store from "@/store/store";
-import VueCookies from "vue-cookies";
 import axios from "axios";
 
 const api = axios.create({
@@ -23,5 +22,4 @@ app.config.globalProperties.$logout = async function () {
 
 app.use(router)
     .use(store)
-    .use(VueCookies)
     .mount('#app')

@@ -22,33 +22,25 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const isPublic = to.matched.some(record => record.meta.public);
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    const token = sessionStorage.getItem('token');
     const tokenExpireTime = sessionStorage.getItem('expTime');
+    const now = new Date().getTime() / 1000;
 
+    if (!tokenExpireTime) {    //토큰 유효시간이 없는 경우(로그인 전)
         store.commit('setNickname', 0);
+    } else if (tokenExpireTime > now) {   //토큰 유효시간이 지난 경우
+        alert("로그인 해주세요.");
         this.$logout();
     }
 
-    if(!token){
-        store.commit('setNickname', 0);
-    }
-    if (isPublic && token) {            //로그인 했는데 public 페이지에 있으면 검색 페이지로 라우팅
+    if (isPublic && tokenExpireTime) {            //로그인 했는데 public 페이지에 있으면 검색 페이지로 라우팅
         return next('/search');
-    } else if (requiresAuth && !token) {
+    } else if (requiresAuth && !tokenExpireTime) {
         // 로그인 안한 사용자는 로그인 페이지로 이동
         alert("로그인 이후 이용 가능합니다.")
-        logout();
-    } else if (requiresAuth && token && tokenExpireTime) {
-        // 토큰이 있고 로그인이 필요한 페이지인 경우
-        const now = new Date().getTime() / 1000; // 현재 시간
-        const expireTime = parseInt(tokenExpireTime); // 만료 시간
-        if (now > expireTime) {
-            // 토큰이 만료되었으면 로그인 페이지로 이동
-            alert("다시 로그인 해주세요.");
-        }
         this.$logout()
     }
     next();
+    console.log(tokenExpireTime)
 });
 
 export default router;

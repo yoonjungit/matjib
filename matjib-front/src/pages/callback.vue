@@ -31,8 +31,6 @@
 <script>
 import router from "@/router";
 import store from "@/store/store";
-import VueJwtDecode from 'vue-jwt-decode'
-import VueCookies from "vue-cookies";
 import api from "@/main";
 
 export default {
@@ -46,13 +44,11 @@ export default {
 
     const submit = async () => {
       try {
-        const nickname = res.data;
-        const token = VueCookies.get('token')
-        const expTime = VueJwtDecode.decode(token).exp;
         const result = await api.post('/matjib/member/login', {tempToken, callbackState})
+        const nickname = result.data;
+        const expireTime = new Date(new Date().getTime() + 30 * 60000);
 
-        sessionStorage.setItem('token', token);
-        sessionStorage.setItem('expTime', expTime);
+        sessionStorage.setItem('expTime', expireTime);
         store.commit('setNickname', nickname);
         await router.push({path: '/search'});
       } catch (error) {
