@@ -26,7 +26,7 @@
 
 import Bookmark from "@/components/Bookmark.vue";
 import {reactive} from "vue";
-import axios from "axios";
+import api from "@/main";
 
 export default {
   name: 'Archive',
@@ -45,7 +45,7 @@ export default {
     const state = reactive({
       bookmarks: [],
     })
-    axios.get("/matjib/bookmark").then(({data}) => {
+    api.get("/matjib/bookmark").then(({data}) => {
       state.bookmarks = data;
     })
     return {state}
