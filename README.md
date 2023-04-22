@@ -4,7 +4,7 @@
 
 ### 🌐 외부 링크
 
-[웹 사이트](https://jjuniv.site), [노션](https://animated-index-cb7.notion.site/b5732366cf934f83b4d9e11024ab3cd9)
+[웹 사이트](https://jjuniv.site), [노션](https://animated-index-cb7.notion.site/b5732366cf934f83b4d9e11024ab3cd9), [시연영상](https://youtu.be/pIJAG51Do8Q)
 
 ## 💻 프로젝트 소개
 
@@ -52,6 +52,7 @@
 #### 👩🏻‍💻임윤정
 
   `Back-end`
+  - Selenium 라이브러리 활용 음식점 평점 크롤링 및 데이터 가공
   - Feign Client 기반 소셜 로그인 기능 및 JWT 토큰 인증 구현
   - JPA 기반 CRUD 구현
     - 회원 관련 : 회원가입, 회원정보(닉네임)수정, 회원탈퇴
