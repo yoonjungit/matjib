@@ -1,10 +1,10 @@
 # 🍴 찐맛집
 
-**찐맛집**은 서대문구 음식점의 네이버 지도, 카카오맵, 구글 지도 평점을 한눈에 볼 수 있는 웹 사이트입니다.
+**찐맛집**은 서대문구 음식점의 네이버 지도, 카카오맵, 구글 지도 평점을 한눈에 비교할 수 있는 웹 사이트입니다.
 
 ### 🌐 외부 링크
 
-[웹 사이트](https://jjuniv.site), [노션](https://animated-index-cb7.notion.site/b5732366cf934f83b4d9e11024ab3cd9), [시연영상](https://youtu.be/pIJAG51Do8Q)
+[시연영상](https://youtu.be/NYqBJD9zSZQ), [API 문서](https://animated-index-cb7.notion.site/c337bae2bc574981880fb717723e01ee?v=3502ec2f6d6c4ef99db04827e3adc14b)
 
 ## 💻 프로젝트 소개
 
@@ -66,28 +66,21 @@
   - 각 페이지 별 axios 비동기 통신 구현 
   - MyPage, Bookmark 페이지, 사이드바 CSS 
 
-  `배포`
-  - Dockerfile 및 Docker-Compose file 작성
-  - 프로젝트 배포 코드 작성
-  - README.md 작성
+
+  `기타`
+  - README.md, 화면흐름도, ERD, API문서 작성
 
 #### 👨🏻‍💻전지훈
 
   `Back-end`
-  - Selenium 라이브러리 활용 음식점 평점 크롤링 및 데이터 가공
+  - Selenium 라이브러리 활용 음식점 평점 크롤링
   
    `Front-end`
   - 로그인 페이지 CSS
   - Search 페이지 : 카카오맵 API 설정, 검색 기능 구현
-  
-  `Google Cloud Platform 배포`
-  - VM 인스턴스 생성 및 환경 설정 (서버, 클라이언트)
-  - Cloud MySQL DB 구축
-  - SSL 프로토콜 적용
 
 ### 🛠️ 사용 기술 스택 
 
-<p align="center">
 <div> 
   <img src="https://img.shields.io/badge/vue.js-FF9E0F?style=for-the-badge&logo=vue.js&logoColor=white"> 
   <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
@@ -95,10 +88,9 @@
 </div><div>
   <img src="https://img.shields.io/badge/mysql-2496ED?style=for-the-badge&logo=mysql&logoColor=white">
 </div><div>
-  <img src="https://img.shields.io/badge/docker-4479A1?style=for-the-badge&logo=docker&logoColor=white"> 
-  <img src="https://img.shields.io/badge/googlecloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white"> 
+<img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> 
+<img src="https://img.shields.io/badge/docker-4479A1?style=for-the-badge&logo=docker&logoColor=white"> 
 </div>
-</p>
 
 ### 📊 ERD 
 
